@@ -10,3 +10,6 @@ This is used to set up the GPS module, it sets the relevant baud rates and will 
 This will check to see that the GPS module has a fix, if it has a fix then it is able to log location data, otherwise not. Currently this will print to serial "GPS Fixed"  and return True  otherwise will print "Poor GPS Signal" and return false
 
 ### GpsController::
+
+# BrakeController
+BrakeController 
