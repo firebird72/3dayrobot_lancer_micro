@@ -1,6 +1,6 @@
 #include <Servo.h>
 //const uint8_t MAX_LENGTH_MM = 50;
-const uint16_t GEAR_POSITIONS[] = {0,20,40,60,80}; // Position of actuator in millimetres
+const uint16_t GEAR_POSITIONS[] = {0,30,60,90}; // Position of actuator in millimetres
 
 
 #define BACKWARDS 0
@@ -17,8 +17,8 @@ class GearController
   public:
     GearController(uint8_t debug);
 
-    void setTargetGear(uint8_t target_gear);
-    void loop(uint8_t rate);
+    void setTargetGear(Servo actuator, uint8_t target_gear, uint16_t time);
+    void loop(Servo servo, uint8_t rate);
 
     uint16_t getCurrentGear();
     uint8_t  getMovingStatus();
@@ -87,9 +87,9 @@ uint8_t GearController::convertPercentToGear(float percent){
 uint16_t GearController::getCurrentGear()
 {
 
-    this->current_gear = convertPercentToGear(this->current_percent);
-
-  return this->current_gear;
+    float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
+                                    / (MOTOR1_MAX - MOTOR1_MIN);
+    return convertPercentToGear(current_percent);
 }
 
 // Return whether the linear actuator is actually moving at the moment
@@ -99,42 +99,56 @@ uint8_t GearController::getMovingStatus()
 }
 
 // Move the linear actuator to a target position in millimetres over time in milliseconds based on a prededined value for target_gear
-void GearController::setTargetGear(uint8_t target_gear)
+void GearController::setTargetGear(Servo actuator, uint8_t target_gear, uint16_t time)
 {
-  this->target_gear = target_gear;
+    this->target_percent = 100 * (float)GEAR_POSITIONS[target_gear] / MAX_LENGTH_MM;
 
-  this->target_percent = (float)GEAR_POSITIONS[this->target_gear] / MAX_LENGTH_MM;
+    this->target_gear = target_gear;
+
+    float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
+                                    / (MOTOR1_MAX - MOTOR1_MIN);
+    
+    if(abs(this->target_percent - current_percent) > TOL){
+        this->is_moving = 1;
+
+        if (this->target_percent > current_percent){// move forwards
+            actuator.writeMicroseconds(FORWARDS);
+            Serial.println("[Break Controller] Moving forwards");
+        }else{
+            actuator.writeMicroseconds(BACKWARDS);
+            Serial.println("[Break Controller] Moving backwards");
+        }
+    }
+    else{
+      actuator.writeMicroseconds(STOP);
+        this->is_moving = 0;
+    }
 }
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
-void GearController::loop(uint8_t rate)
+void GearController::loop(Servo servo, uint8_t rate)
 {
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
     // Execute code
-
-    this->current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
+    float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
                                     / (MOTOR1_MAX - MOTOR1_MIN);
 
-    Serial.println("[Gear Controller] Target Gear: ");
-    Serial.println(this->target_gear);
-
-    Serial.println("[Gear Controller] Current Gear: ");
-    Serial.println(this->current_gear);
-
-
-    if(abs(this->target_percent - this->current_percent) > TOL){
+    if(abs(this->target_percent - current_percent) > TOL){
         this->is_moving = 1;
 
-        if (this->target_percent > this->current_percent){// move forwards
-            this->actuator.writeMicroseconds(FORWARDS);
-            Serial.println("[Gear Controller] Moving forwards");
+        if (this->target_percent > current_percent){// move forwards
+            //actuator.writeMicroseconds(FORWARDS);
+            Serial.println("[Break Controller] Moving forwards");
         }else{
-            this->actuator.writeMicroseconds(BACKWARDS);
-            Serial.println("[Gear Controller] Moving backwards");
+            //actuator.writeMicroseconds(BACKWARDS);
+            Serial.println("[Break Controller] Moving backwards");
         }
     }
-    else{
+    else if (this->is_moving){
+      Serial.println("[Break Controller] Stopping");
+      actuator.writeMicroseconds(STOP);
         this->is_moving = 0;
     }
+
   }
 }

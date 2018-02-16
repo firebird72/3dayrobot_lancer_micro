@@ -8,7 +8,7 @@ const uint8_t MAX_LENGTH_MM = 50;
 #define BACKWARDS 0
 #define FORWARDS 3000
 #define STOP 1500
-#define TOL 1
+#define BREAK_TOL 1
 
 #define MOTOR1_MAX 660
 #define MOTOR1_MIN 400
@@ -80,15 +80,8 @@ void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uin
 
     float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
                                     / (MOTOR1_MAX - MOTOR1_MIN);
-    Serial.println("Target: ");
-    Serial.println(this->target_percent);
-    Serial.println("Raw");
-    Serial.println(analogRead(this->potentiometer_pin));
-    Serial.println("Position: ");
-    Serial.println(current_percent);
-
     
-    if(abs(this->target_percent - current_percent) > TOL){
+    if(abs(this->target_percent - current_percent) > BREAK_TOL){
         this->is_moving = 1;
 
         if (this->target_percent > current_percent){// move forwards
@@ -116,14 +109,8 @@ void BrakeController::loop(Servo actuator, uint8_t rate)
     // Execute code
     float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
                                     / (MOTOR1_MAX - MOTOR1_MIN);
-    Serial.println("Target: ");
-    Serial.println(this->target_percent);
-    Serial.println("Raw");
-    Serial.println(analogRead(this->potentiometer_pin));
-    Serial.println("Position: ");
-    Serial.println(current_percent);
 
-    if(abs(this->target_percent - current_percent) > TOL){
+    if(abs(this->target_percent - current_percent) > BREAK_TOL){
         this->is_moving = 1;
 
         if (this->target_percent > current_percent){// move forwards
