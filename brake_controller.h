@@ -30,13 +30,13 @@ class BrakeController
     uint16_t  target_pos;
     uint16_t  target_percent;
     uint16_t  time;
-
     uint8_t actuator_pin;
     uint8_t potentiometer_pin;
 
     Servo actuator;  // create servo object to control a RoboClaw channel
 
     uint8_t is_moving;
+    uint16_t  nextMillis;
     
     const char* CLASS_NAME = "BrakeController";
 };
@@ -135,8 +135,9 @@ void BrakeController::setTargetPosition(uint16_t target_pos, uint16_t time)
 void BrakeController::loop(uint8_t rate)
 {
 
-
-  if (millis() % rate == 0) {
+  if (millis() >= nextMillis) {
+    nextMillis = millis() + rate;
+    // Execute code
 
     float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
                                     / (MOTOR1_MAX - MOTOR1_MIN);
@@ -156,8 +157,6 @@ void BrakeController::loop(uint8_t rate)
     else{
         this->is_moving = 0;
     }
-
-
 
   }
 }

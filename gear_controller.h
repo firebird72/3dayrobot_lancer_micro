@@ -30,7 +30,10 @@ class GearController
     uint16_t  target_gear;
     uint16_t  target_percent;
     uint16_t current_percent;
+
     uint8_t   current_gear; // this should be set by the potentiometer so if the unit is power cycled, it doesn't assume position 0 
+    uint16_t  target_gear;
+    uint16_t  nextMillis;
     
     uint8_t actuator_pin;
     uint8_t potentiometer_pin;
@@ -106,7 +109,9 @@ void GearController::setTargetGear(uint8_t target_gear)
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void GearController::loop(uint8_t rate)
 {
-  if (millis() % rate == 0) {
+  if (millis() >= nextMillis) {
+    nextMillis = millis() + rate;
+    // Execute code
 
     this->current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
                                     / (MOTOR1_MAX - MOTOR1_MIN);
@@ -132,6 +137,5 @@ void GearController::loop(uint8_t rate)
     else{
         this->is_moving = 0;
     }
-
   }
 }
