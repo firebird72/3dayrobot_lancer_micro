@@ -17,6 +17,7 @@ class GearController
     uint8_t   current_gear; // this should be set by the potentiometer so if the unit is power cycled, it doesn't assume position 0 
     uint16_t  target_gear;
     uint16_t  nextMillis;
+    uint16_t  currInterpolationTim
     
     const char* CLASS_NAME = "GearController";
 };
@@ -41,12 +42,18 @@ uint16_t GearController::getCurrentGear()
 // Return whether the linear actuator is actually moving at the moment
 uint8_t GearController::getMovingStatus()
 {
+  // serial comms
   return 0;
 }
 
 // Move the linear actuator to a target position in millimetres over time in milliseconds based on a prededined value for target_gear
 void GearController::setTargetGear(uint8_t target_gear)
 {
+  // using potentiometer 
+  if (target_gear != current_gear) {
+    current_gear == target_gear;
+  }
+
   // go to GEAR_POSITION[target_gear]
   // if at GEAR_POSITION[target_gear] then update current_gear = target_gear and moving to false
 }
@@ -57,5 +64,11 @@ void GearController::loop(uint8_t rate)
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
     // Execute code
+
+    // check for serial comms and get target gear
+    uint8_t target_gear = 0;
+
+    setTargetGear(target_gear); 
+
   }
 }

@@ -1,5 +1,6 @@
 const uint8_t MIN_BRAKE     = 1; // Position of actuator in millimetres
 const uint8_t MAX_BRAKE     = 100; // Position of actuator in millimetres
+const uint8_t BRAKE_TIME_INTERVAL     = 4000; // milliseconds over which to interpolate speed values 
 
 class BrakeController
 {
@@ -15,6 +16,7 @@ class BrakeController
   private:
     uint8_t   debug;
     uint8_t   moving;
+    uint16_t  current_position
     uint16_t  target_pos;
     uint16_t  time;
     uint16_t  nextMillis;
@@ -36,19 +38,22 @@ BrakeController::BrakeController(uint8_t debug)
 // Return the current position of the linear actuator in millimetres
 uint16_t BrakeController::getCurrentPosition()
 {
+  // use serial comms
   return 100;
 }
 
 // Return whether the linear actuator is actually moving at the moment
 uint8_t BrakeController::getMovingStatus()
 {
+  // use serial comms
   return 0;
 }
 
+// not used
 // Move the linear actuator to a target position in millimetres over time in milliseconds
-void BrakeController::setTargetPosition(uint16_t target_pos, uint16_t time)
+void BrakeController::setTargetPosition(uint16_t target_pos)
 {
-  
+
 }
 
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
@@ -56,6 +61,15 @@ void BrakeController::loop(uint8_t rate)
 {
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
+
     // Execute code
+
+    // check serial comms for a change in position
+    uint16_t target_position = 0; 
+    // scaleValue(target_position); // if we want to scale value here instead of in throttle.h
+
+    interpolate(&target_position, &current_position, false, millis());
+     
+
   }
 }
