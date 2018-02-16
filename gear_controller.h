@@ -14,8 +14,9 @@ class GearController
   private:
     uint8_t   debug;
     uint8_t   moving;
-    uint16_t  target_gear;
     uint8_t   current_gear; // this should be set by the potentiometer so if the unit is power cycled, it doesn't assume position 0 
+    uint16_t  target_gear;
+    uint16_t  nextMillis;
     
     const char* CLASS_NAME = "GearController";
 };
@@ -53,7 +54,8 @@ void GearController::setTargetGear(uint8_t target_gear)
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void GearController::loop(uint8_t rate)
 {
-  if (millis() % rate == 0) {
+  if (millis() >= nextMillis) {
+    nextMillis = millis() + rate;
     // Execute code
   }
 }

@@ -19,6 +19,7 @@ class IgnitionController
 
     uint8_t   debug;
     uint8_t   current_status; // CAR_STOPPED vs CAR_STARTED
+    uint16_t  nextMillis;
     
     const char* CLASS_NAME = "IgnitionController";
 };
@@ -69,7 +70,8 @@ void IgnitionController::start()
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void IgnitionController::loop(uint8_t rate)
 {
-  if (millis() % rate == 0) {
+  if (millis() >= nextMillis) {
+    nextMillis = millis() + rate;
     // Execute code
     if (current_status == CAR_STARTED) {
       digitalWrite(IGNITION_START_PIN, LOW);

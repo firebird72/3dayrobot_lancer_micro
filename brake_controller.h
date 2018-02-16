@@ -17,6 +17,7 @@ class BrakeController
     uint8_t   moving;
     uint16_t  target_pos;
     uint16_t  time;
+    uint16_t  nextMillis;
     
     const char* CLASS_NAME = "BrakeController";
 };
@@ -53,7 +54,8 @@ void BrakeController::setTargetPosition(uint16_t target_pos, uint16_t time)
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void BrakeController::loop(uint8_t rate)
 {
-  if (millis() % rate == 0) {
+  if (millis() >= nextMillis) {
+    nextMillis = millis() + rate;
     // Execute code
   }
 }
