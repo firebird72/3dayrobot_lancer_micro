@@ -10,7 +10,7 @@
 Servo actuator;  // create servo object to control a RoboClaw channel
 
 int potentiometer_pin = 0; // Analog pin
-int actuator_pin = 2; // PWM pin
+int actuator_pin = 3; // PWM pin
 float pot_value = 10000;//Not necessarily the same for both actuators
 
 void setup() 
@@ -46,10 +46,10 @@ void moveToPercent(float target){
 
         
         if (target > position){// move forwards
-            actuator.writeMicroseconds(FORWARDS);
+            //actuator.writeMicroseconds(FORWARDS);
             Serial.println("Moving forwards");
         }else{
-            actuator.writeMicroseconds(BACKWARDS);
+            //actuator.writeMicroseconds(BACKWARDS);
             Serial.println("Moving backwards");
         }
 
