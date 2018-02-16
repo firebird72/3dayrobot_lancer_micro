@@ -109,6 +109,9 @@ void GearController::setTargetGear(uint8_t target_gear)
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void GearController::loop(uint8_t rate)
 {
+
+  uint8_t writeValue = 0;
+
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
     // Execute code
@@ -127,12 +130,14 @@ void GearController::loop(uint8_t rate)
         this->is_moving = 1;
 
         if (this->target_percent > this->current_percent){// move forwards
-            this->actuator.writeMicroseconds(FORWARDS);
+            //this->actuator.writeMicroseconds(FORWARDS);
             Serial.println("[Gear Controller] Moving forwards");
         }else{
-            this->actuator.writeMicroseconds(BACKWARDS);
+            //this->actuator.writeMicroseconds(BACKWARDS);
             Serial.println("[Gear Controller] Moving backwards");
         }
+
+        writeValue = interpolate(target_percent, current_percent, true, millis());
     }
     else{
         this->is_moving = 0;

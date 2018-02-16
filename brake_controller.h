@@ -33,6 +33,8 @@ class BrakeController
     uint8_t actuator_pin;
     uint8_t potentiometer_pin;
 
+    uint16_t  current_time;
+
     Servo actuator;  // create servo object to control a RoboClaw channel
 
     uint8_t is_moving;
@@ -147,10 +149,12 @@ void BrakeController::loop(uint8_t rate)
         this->is_moving = 1;
 
         if (this->target_percent > current_percent){// move forwards
-            this->actuator.writeMicroseconds(FORWARDS);
+            //this->actuator.writeMicroseconds(FORWARDS);
+            interpolate(target_percent, current_percent, false, millis());
             Serial.println("[Break Controller] Moving forwards");
         }else{
-            this->actuator.writeMicroseconds(BACKWARDS);
+            //this->actuator.writeMicroseconds(BACKWARDS);
+            interpolate(target_percent, current_percent, false, millis())
             Serial.println("[Break Controller] Moving backwards");
         }
     }
