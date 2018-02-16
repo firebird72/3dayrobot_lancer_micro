@@ -139,9 +139,15 @@ void BrakeController::loop(uint8_t rate)
     nextMillis = millis() + rate;
     // Execute code
 
+    Serial.println("here");
     float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
                                     / (MOTOR1_MAX - MOTOR1_MIN);
-
+    Serial.println("Target: ");
+    Serial.println(this->target_percent);
+    Serial.println("Raw");
+    Serial.println(analogRead(this->potentiometer_pin));
+    Serial.println("Position: ");
+    Serial.println(current_percent);
 
     if(abs(this->target_percent - current_percent) > TOL){
         this->is_moving = 1;

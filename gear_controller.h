@@ -27,7 +27,6 @@ class GearController
   private:
     uint8_t   debug;
     uint8_t   moving;
-    uint16_t  target_gear;
     uint16_t  target_percent;
     uint16_t current_percent;
 
