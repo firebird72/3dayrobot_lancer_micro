@@ -58,25 +58,34 @@ void logic() {
 
     if (ignition_status == 0 && dataParser.getExpectedIgnitionStatus() == 1) {
         ignitionController.start();
+        Serial.println("Ignit on");
     } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 1) {
     	ignitionController.run();
+    	Serial.println("Ignit run");
     } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 0) {
+    	Serial.println("Ignit stop");
     	ignitionController.stop();
     }
 
-      if (brake_position == 0 && dataParser.getExpectedBrakePosition() == 1) {
+     if (brake_position == 0 && dataParser.getExpectedBrakePosition() == 1) {
+      	Serial.println("Brake on");
         brakeController.start();
     } else if (brake_position == 1 && dataParser.getExpectedBrakePosition() == 1) {
+    	Serial.println("Brake run");
     	brakeController.run();
     } else if (brake_position == 1 && dataParser.getExpectedBrakePosition() == 0) {
+    	Serial.println("Brake on");
     	brakeController.stop();
     }
 
-      if (accelerator_position == 0 && dataParser.getExpectedAcceleratorPosition() == 1) {
+     if (accelerator_position == 0 && dataParser.getExpectedAcceleratorPosition() == 1) {
         acceleratorController.start();
+        Serial.println("Accel on");
     } else if (accelerator_position == 1 && dataParser.getExpectedAcceleratorPosition() == 1) {
+    	Serial.println("Accel run");
     	acceleratorController.run();
     } else if (accelerator_position == 1 && dataParser.getExpectedAcceleratorPosition() == 0) {
+    	Serial.println("Accel stop");
     	acceleratorController.stop();
     }
   

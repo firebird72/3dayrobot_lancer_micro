@@ -124,11 +124,11 @@ void AcceleratorController::loop(uint8_t rate)
         if (this->target_value > current_value){// move forwards
             uint8_t value = map(FORWARDS, 0, 1023, 0, 179); 
             this->actuator.write(value);
-            if (debug) Serial.println("[Accelerator Controller] Moving forwards");
+            //if (debug) Serial.println("[Accelerator Controller] Moving forwards");
         }else{
             uint8_t value = map(BACKWARDS, 0, 1023, 0, 179); 
             this->actuator.write(value);
-            if (debug) Serial.println("[Accelerator Controller] backwards");
+            //if (debug) Serial.println("[Accelerator Controller] backwards");
         }
     }
     else if (this->is_moving){
