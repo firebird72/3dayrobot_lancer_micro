@@ -7,7 +7,6 @@ class IgnitionController
     void start();
     void run();
     void stop();
-    void run();
     void loop(uint8_t rate);
 
     uint16_t  getCurrentStatus();
