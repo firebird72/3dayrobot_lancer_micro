@@ -69,6 +69,15 @@ void IgnitionController::start()
   }
 }
 
+void IgnitionController::stop()
+{
+  if (current_status != CAR_STOPPED) {
+    digitalWrite(IGNITION_START_PIN, LOW);
+    digitalWrite(IGNITION_RUN_PIN, LOW);
+  }
+}
+
+
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void IgnitionController::loop(uint8_t rate)
 {
