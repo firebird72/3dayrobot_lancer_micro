@@ -2,11 +2,11 @@
 
 const uint8_t MIN_ACCELERATOR     = 1; // Position of actuator in millimetres
 const uint8_t MAX_ACCELERATOR     = 50; // Position of actuator in millimetres
+const uint8_t ACCELERATOR_TOL     = 10;
 
 #define BACKWARDS 0
 #define FORWARDS 3000
 #define STOP 1500
-#define ACCELERATOR_TOL 10
 
 #define MOTOR1_MAX 660
 #define MOTOR1_MIN 400
