@@ -29,7 +29,6 @@ class BrakeController
   private:
     uint8_t   debug;
     uint8_t   moving;
-    uint16_t  target_pos;
     uint16_t  target_value;
     uint16_t  time;
 
