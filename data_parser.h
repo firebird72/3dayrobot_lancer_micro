@@ -60,6 +60,7 @@ void DataParser::parseExternalData(String data) {
       uint16_t _gear_position         = (uint16_t) data.substring(12, 16).toInt();
       uint16_t _checksum              = (uint16_t) data.substring(MESSAGE_LENGTH - 4, MESSAGE_LENGTH).toInt();
 
+      // 0 795 1023 1023 01201102961
       Serial.println("Checking checksum components.\n");
       Serial.println(_steering_position);
       Serial.println(_brake_position);
@@ -73,11 +74,13 @@ void DataParser::parseExternalData(String data) {
         brake_position        = _brake_position;
         accelerator_position  = _accelerator_position;
         gear_position         = _gear_position;
-        autonomy_status       = (uint8_t)  data.substring(16).toInt();
-        ignition_status       = (uint8_t)  data.substring(17).toInt();
-        kill_status           = (uint8_t)  data.substring(18).toInt();
+        autonomy_status       = (uint8_t)  data.substring(16, 17).toInt();
+        ignition_status       = (uint8_t)  data.substring(17, 18).toInt();
+        kill_status           = (uint8_t)  data.substring(18, 19).toInt();
         checksum              = (uint16_t) data.substring(MESSAGE_LENGTH - 4, MESSAGE_LENGTH).toInt();
         Serial.println("correct sum\n");
+        Serial.println(ignition_status);
+        Serial.println("YOLO\n");
       } else {
         if (debug) {
           Serial.print(CLASS_NAME);
