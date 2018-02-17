@@ -62,8 +62,7 @@ void BrakeController::setup() {
 // Return the current position of the linear actuator in millimetres
 float BrakeController::getCurrentPosition()
 {
-  return MAX_LENGTH_MM * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
-                            / (MOTOR1_MAX - MOTOR1_MIN);
+  return analogRead(this->potentiometer_pin);
 }
 
 // Return whether the linear actuator is actually moving at the moment
@@ -75,7 +74,7 @@ uint8_t BrakeController::getMovingStatus()
 // Move the linear actuator to a target position in millimetres over time in milliseconds
 void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time)
 {
-  this->target_value = (float)target_pos;
+    this->target_value = (float)target_pos;
 
     float current_value = analogRead(this->potentiometer_pin);
     
@@ -105,8 +104,7 @@ void BrakeController::loop(uint8_t rate)
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
     // Execute code
-    float current_value = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
-                                    / (MOTOR1_MAX - MOTOR1_MIN);
+    float current_value = analogRead(this->potentiometer_pin);
 
     if(abs(this->target_value - current_value) > BREAK_TOL){
         this->is_moving = 1;

@@ -30,7 +30,7 @@ class GearController
     uint8_t   debug;
     uint8_t   moving;
     uint16_t  target_value;
-    uint16_t target_value;
+    uint16_t  current_value;
 
     uint8_t   current_gear; // this should be set by the potentiometer so if the unit is power cycled, it doesn't assume position 0 
     uint16_t  target_gear;
@@ -55,9 +55,9 @@ GearController::GearController(uint8_t debug)
 
   this->actuator.attach(this->actuator_pin);  // attaches the RC signal on pin 5 to the servo object
 
-  this->target_value =  analogRead(this->potentiometer_pin);
+  this->current_value = analogRead(this->potentiometer_pin);
 
-  this->current_gear = convertPercentToGear(this->target_value);
+  this->current_gear = convertPercentToGear(this->current_value);
 
 }
 
@@ -74,7 +74,7 @@ uint8_t GearController::convertPercentToGear(float percent){
     uint8_t best_gear = 0;
 
     for(int i; i < 4; i++){
-        float dist = abs(this->target_value - GEAR_POSITIONS[i]);
+        float dist = abs(this->current_value - GEAR_POSITIONS[i]);
         if(dist < best_dist){
             best_dist = dist;
             best_gear = i;
@@ -85,8 +85,8 @@ uint8_t GearController::convertPercentToGear(float percent){
 // Return the last known gear
 uint16_t GearController::getCurrentGear()
 {
-    float target_value = analogRead(this->potentiometer_pin);
-    return convertPercentToGear(target_value);
+    float current_value = analogRead(this->potentiometer_pin);
+    return convertPercentToGear(current_value);
 }
 
 // Return whether the linear actuator is actually moving at the moment
@@ -102,12 +102,12 @@ void GearController::setTargetGear(Servo actuator, uint8_t target_gear, uint16_t
 
     this->target_gear = target_gear;
 
-    float target_value = analogRead(this->potentiometer_pin);
+    float current_value = analogRead(this->potentiometer_pin);
     
-    if(abs(this->target_value - target_value) > TOL){
+    if(abs(this->target_value - current_value) > TOL){
         this->is_moving = 1;
 
-        if (this->target_value > target_value){// move forwards
+        if (this->target_value > current_value){// move forwards
             actuator.writeMicroseconds(FORWARDS);
             Serial.println("[Break Controller] Moving forwards");
         }else{
@@ -116,7 +116,7 @@ void GearController::setTargetGear(Servo actuator, uint8_t target_gear, uint16_t
         }
     }
     else{
-      actuator.writeMicroseconds(STOP);
+        actuator.writeMicroseconds(STOP);
         this->is_moving = 0;
     }
 }
@@ -126,20 +126,19 @@ void GearController::loop(uint8_t rate)
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
     // Execute code
-    float target_value = analogRead(this->potentiometer_pin);
+    float current_value = analogRead(this->potentiometer_pin);
 
-    if(abs(this->target_value - target_value) > TOL){
+    if(abs(this->target_value - current_value) > TOL){
         this->is_moving = 1;
 
-        if (this->target_value > target_value){// move forwards
-            //actuator.writeMicroseconds(FORWARDS);
+        if (this->target_value > current_value){// move forwards
+            actuator.writeMicroseconds(FORWARDS);
             Serial.println("[Break Controller] Moving forwards");
         }else{
-            //actuator.writeMicroseconds(BACKWARDS);
+            actuator.writeMicroseconds(BACKWARDS);
             Serial.println("[Break Controller] Moving backwards");
         }
-    }
-    else if (this->is_moving){
+    } else if (this->is_moving){
       Serial.println("[Break Controller] Stopping");
       actuator.writeMicroseconds(STOP);
         this->is_moving = 0;
