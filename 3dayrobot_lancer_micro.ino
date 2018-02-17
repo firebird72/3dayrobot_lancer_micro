@@ -117,16 +117,10 @@ void logic() {
     // gear commands
 
     uint16_t expected_gear_position = dataParser.getExpectedGearPosition();
-    gear_position = gearController.getCurrentGear();
+    gear_position = gearController.getCurrentPosition();
 
-    if (expected_gear_position == GEAR_POSITIONS[0]) {
-    	gearController.setTargetGear(GEAR_POSITIONS[0]);
-    } else if (expected_gear_position == GEAR_POSITIONS[1]) {
-    	gearController.setTargetGear(GEAR_POSITIONS[1]);
-    } else if (expected_gear_position == GEAR_POSITIONS[2]) {
-    	gearController.setTargetGear(GEAR_POSITIONS[2]);
-    } else if (expected_gear_position == GEAR_POSITIONS[3]) {
-    	gearController.setTargetGear(GEAR_POSITIONS[3]);
+    if (expected_gear_position != gear_position) {
+    	gearController.setTargetPosition(expected_gear_position);
     }
   
   	// writing back over serial comms
