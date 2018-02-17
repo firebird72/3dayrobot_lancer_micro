@@ -55,7 +55,7 @@ void logic() {
         ignitionController.start();
     } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 1) {
     	ignitionController.run();
-    } else if (ignition_status == 1 && dataparser.getExpectedIgnitionStatus() == 0) {
+    } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 0) {
     	ignitionController.stop();
     }
   }
