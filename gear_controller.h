@@ -5,10 +5,20 @@ class GearController
   public:
     GearController(uint8_t debug);
 
+<<<<<<< HEAD
     void     setup();
     void     setTargetPosition(uint16_t target_pos);
     void     loop(uint8_t rate);
     
+=======
+    void setup();
+
+    void setTargetGear(uint8_t target_gear, uint16_t time);
+    void resetGearStates();
+    void loop(uint8_t rate);
+
+    uint16_t getCurrentGear();
+>>>>>>> 825f4888611c6523020a23635b52c61893c60362
     uint8_t  getMovingStatus();
     uint16_t getCurrentPosition();
 
@@ -58,8 +68,13 @@ void GearController::resetGearStates() {
   digitalWrite(EXTEND_PIN, LOW);
 }
 
+<<<<<<< HEAD
 // Set the desired value of the potentiometer
 void GearController::setTargetPosition(uint16_t target_pos)
+=======
+// Move the linear actuator to a target position in millimetres over time in milliseconds based on a prededined value for target_gear
+void GearController::setTargetGear(uint8_t target_gear, uint16_t time)
+>>>>>>> 825f4888611c6523020a23635b52c61893c60362
 {
     this->target_pos = target_pos
 }

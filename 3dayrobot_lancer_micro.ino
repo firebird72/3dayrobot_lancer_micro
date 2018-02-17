@@ -61,6 +61,9 @@ void logic() {
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
 
+
+    // ignition commands
+
     uint16_t expected_ignition_status = dataParser.getExpectedIgnitionStatus();
     ignition_status = ignitionController.getCurrentStatus();
 
@@ -77,6 +80,9 @@ void logic() {
     	ignitionController.stop();
     }
 
+
+    // brake commands
+
     uint16_t expected_brake_status = dataParser.getExpectedBrakePosition();
     brake_position = brakeController.getCurrentPosition();
 
@@ -91,6 +97,9 @@ void logic() {
     	brakeController.stop();
     }
 
+
+    // accelerator commands
+
     uint16_t expected_accelerator_status = dataParser.getExpectedAcceleratorPosition();
     accelerator_position = acceleratorController.getCurrentPosition();
 
@@ -103,6 +112,21 @@ void logic() {
     } else if (accelerator_position == 1 && expected_accelerator_status == 0) {
     	if (DEBUG) Serial.println("Accel stop");
     	acceleratorController.stop();
+    }
+
+    // gear commands
+
+    uint16_t expected_gear_position = dataParser.getExpectedGearPosition();
+    gear_position = gearController.getCurrentGear();
+
+    if (expected_gear_position == GEAR_POSITIONS[0]) {
+    	gearController.setTargetGear(GEAR_POSITIONS[0]);
+    } else if (expected_gear_position == GEAR_POSITIONS[1]) {
+    	gearController.setTargetGear(GEAR_POSITIONS[1]);
+    } else if (expected_gear_position == GEAR_POSITIONS[2]) {
+    	gearController.setTargetGear(GEAR_POSITIONS[2]);
+    } else if (expected_gear_position == GEAR_POSITIONS[3]) {
+    	gearController.setTargetGear(GEAR_POSITIONS[3]);
     }
   
   	// writing back over serial comms
