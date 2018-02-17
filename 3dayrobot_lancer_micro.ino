@@ -3,12 +3,14 @@
 #include "brake_controller.h"
 #include "gear_controller.h"
 #include "data_parser.h"
+#include "accelerator_controller.h"
 
 
-IgnitionController ignitionController(true);
-BrakeController    brakeController(true);
-GearController     gearController(true);
-DataParser         dataParser(true);
+IgnitionController 		ignitionController(true);
+BrakeController    		brakeController(true);
+GearController     	  	gearController(true);
+AcceleratorController 	acceleratorController(true);
+DataParser         		dataParser(true);
 
 uint16_t steering_position;
 uint16_t brake_position;
@@ -30,8 +32,10 @@ String command;
 
 void setup() {
   Serial.begin(9600);
-  
+
   dataParser.setup();
+
+  acceleratorController.setup();
   brakeController.setup();
   gearController.setup();
   ignitionController.setup();
@@ -43,6 +47,7 @@ void loop() {
   brakeController.loop(100);
   gearController.loop(100);
   ignitionController.loop(100);
+  acceleratorController.loop(100);
 }
 
 void logic() {
@@ -55,25 +60,26 @@ void logic() {
         ignitionController.start();
     } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 1) {
     	ignitionController.run();
-    } else if (ignition_status == 1 && dataparser.getExpectedIgnitionStatus() == 0) {
+    } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 0) {
     	ignitionController.stop();
     }
 
-    if (brake_status == 0 && dataParser.getExpectedBrakeStatus() == 1) {
+      if (brake_position == 0 && dataParser.getExpectedBrakePosition() == 1) {
         brakeController.start();
-    } else if (brake_status == 1 && dataParser.getExpectedBrakeStatus() == 1) {
+    } else if (brake_position == 1 && dataParser.getExpectedBrakePosition() == 1) {
     	brakeController.run();
-    } else if (brake_status == 1 && dataparser.getExpectedBrakeStatus() == 0) {
+    } else if (brake_position == 1 && dataParser.getExpectedBrakePosition() == 0) {
     	brakeController.stop();
     }
 
-    if (acceleration_status == 0 && dataParser.getExpectedAccelerationStatus() == 1) {
-        brakeController.start();
-    } else if (acceleration_status == 1 && dataParser.getExpectedAccelerationStatus() == 1) {
-    	brakeController.run();
-    } else if (acceleration_status == 1 && dataparser.getExpectedAccelerationStatus() == 0) {
-    	brakeController.stop();
+      if (accelerator_position == 0 && dataParser.getExpectedAcceleratorPosition() == 1) {
+        acceleratorController.start();
+    } else if (accelerator_position == 1 && dataParser.getExpectedAcceleratorPosition() == 1) {
+    	acceleratorController.run();
+    } else if (accelerator_position == 1 && dataParser.getExpectedAcceleratorPosition() == 0) {
+    	acceleratorController.stop();
     }
+  
 
   }
 
