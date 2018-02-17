@@ -17,6 +17,8 @@ class GearController
   public:
     GearController(uint8_t debug);
 
+    void setup();
+
     void setTargetGear(Servo actuator, uint8_t target_gear, uint16_t time);
     void loop(Servo servo, uint8_t rate);
 
@@ -34,14 +36,13 @@ class GearController
     uint16_t  target_gear;
     uint16_t  nextMillis;
     
-    uint8_t actuator_pin;
-    uint8_t potentiometer_pin;
+    const char* CLASS_NAME = "GearController";
+    const uint8_t actuator_pin = 2;
+    const uint8_t potentiometer_pin = 0;
 
     Servo actuator;  // create servo object to control a RoboClaw channel
 
     uint8_t is_moving;
-    
-    const char* CLASS_NAME = "GearController";
 };
 
 // Initialise the GearController
@@ -49,16 +50,8 @@ class GearController
 GearController::GearController(uint8_t debug)
 {
   this->debug = debug;
-  if (debug) {
-    Serial.print(CLASS_NAME);
-    Serial.println(": initialised");
-  }
 
   is_moving = 0;
-
-
-  this->actuator_pin = 2;
-  this->potentiometer_pin = 0;
 
   this->actuator.attach(this->actuator_pin);  // attaches the RC signal on pin 5 to the servo object
 
@@ -67,6 +60,13 @@ GearController::GearController(uint8_t debug)
 
   this->current_gear = convertPercentToGear(this->current_percent);
 
+}
+
+void GearController::setup() {
+  if (debug) {
+    Serial.print(CLASS_NAME);
+    Serial.println(": initialised");
+  }
 }
 
 uint8_t GearController::convertPercentToGear(float percent){
