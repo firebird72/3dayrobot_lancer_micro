@@ -15,5 +15,5 @@ void setup() {
 }
 
 void loop() {
-  brakeController.loop();
+  brakeController.loop(100);
 }

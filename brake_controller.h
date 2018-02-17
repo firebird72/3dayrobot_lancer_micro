@@ -22,7 +22,7 @@ class BrakeController
     void setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time);
     float getCurrentPosition();
     void setup();
-    void loop(Servo actuator, uint8_t rate);
+    void loop(uint8_t rate);
 
     uint8_t  getMovingStatus();
 
@@ -38,7 +38,9 @@ class BrakeController
     
     const char*   CLASS_NAME = "BrakeController";
     const uint8_t actuator_pin;
-    const uint8_t potentiometer_pin;
+    const uint8_t potentiometer_pin = 3;
+
+    Servo actuator;
 };
 
 // Initialise the BrakeController
@@ -47,7 +49,6 @@ BrakeController::BrakeController(uint8_t debug)
 {
   this->debug = debug;
   is_moving = 0;
-  this->potentiometer_pin = 0;
   //actuator.attach(actuator_pin);  // attaches the RC signal on pin 5 to the servo object 
 }
 
@@ -99,7 +100,7 @@ void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uin
 }
 
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
-void BrakeController::loop(Servo actuator, uint8_t rate)
+void BrakeController::loop(uint8_t rate)
 {
 
   if (millis() >= nextMillis) {

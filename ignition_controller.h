@@ -1,8 +1,3 @@
-const uint8_t IGNITION_START_PIN  = 1; // Digital pin connected to the first relay on the ignition
-const uint8_t IGNITION_RUN_PIN    = 2; // Digital pin connected to the first relay on the ignition
-const uint8_t CAR_STOPPED         = 0;
-const uint8_t CAR_STARTED         = 1;
-
 class IgnitionController
 {
   public:
@@ -20,8 +15,12 @@ class IgnitionController
     uint8_t   debug;
     uint8_t   current_status; // CAR_STOPPED vs CAR_STARTED
     uint16_t  nextMillis;
-    
-    const char* CLASS_NAME = "IgnitionController";
+
+    const uint8_t IGNITION_START_PIN  = 1; // Digital pin connected to the first relay on the ignition
+    const uint8_t IGNITION_RUN_PIN    = 2; // Digital pin connected to the first relay on the ignition
+    const uint8_t CAR_STOPPED         = 0;
+    const uint8_t CAR_STARTED         = 1;
+    const char*   CLASS_NAME          = "IgnitionController";
 };
 
 // Initialise the IgnitionController
