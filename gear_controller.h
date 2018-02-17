@@ -20,7 +20,7 @@ class GearController
     void setup();
 
     void setTargetGear(Servo actuator, uint8_t target_gear, uint16_t time);
-    void loop(Servo servo, uint8_t rate);
+    void loop(uint8_t rate);
 
     uint16_t getCurrentGear();
     uint8_t  getMovingStatus();
@@ -125,7 +125,7 @@ void GearController::setTargetGear(Servo actuator, uint8_t target_gear, uint16_t
     }
 }
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
-void GearController::loop(Servo servo, uint8_t rate)
+void GearController::loop(uint8_t rate)
 {
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
