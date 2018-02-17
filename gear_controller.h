@@ -1,5 +1,6 @@
 #include <Servo.h>
 //const uint8_t MAX_LENGTH_MM = 50;
+// what do each of the gears mark?
 const uint16_t GEAR_POSITIONS[] = {0,30,60,90}; // Position of actuator in millimetres
 
 
@@ -20,6 +21,7 @@ class GearController
     void setup();
 
     void setTargetGear(Servo actuator, uint8_t target_gear, uint16_t time);
+    void resetGearStates();
     void loop(uint8_t rate);
 
     uint16_t getCurrentGear();
@@ -37,8 +39,11 @@ class GearController
     uint16_t  nextMillis;
     
     const char* CLASS_NAME = "GearController";
-    const uint8_t actuator_pin = 2;
-    const uint8_t potentiometer_pin = 0;
+
+    // change pins
+    const uint8_t relay_pin_1 = 2;
+    const uint8_t relay_pin_2 = 4;
+    const uint8_t potentiometer_pin = 6;
 
     Servo actuator;  // create servo object to control a RoboClaw channel
 
@@ -53,12 +58,8 @@ GearController::GearController(uint8_t debug)
 
   is_moving = 0;
 
-  this->actuator.attach(this->actuator_pin);  // attaches the RC signal on pin 5 to the servo object
-
   this->current_value = analogRead(this->potentiometer_pin);
-
   this->current_gear = convertPercentToGear(this->current_value);
-
 }
 
 void GearController::setup() {
@@ -95,53 +96,61 @@ uint8_t GearController::getMovingStatus()
   return this->is_moving;
 }
 
+void GearController::resetGearStates() {
+  digitalWrite(relay_pin_2, LOW);
+  digitalWrite(relay_pin_1, LOW);
+}
+
 // Move the linear actuator to a target position in millimetres over time in milliseconds based on a prededined value for target_gear
 void GearController::setTargetGear(Servo actuator, uint8_t target_gear, uint16_t time)
 {
     this->target_value = (float)GEAR_POSITIONS[target_gear];
-
     this->target_gear = target_gear;
-
     float current_value = analogRead(this->potentiometer_pin);
     
     if(abs(this->target_value - current_value) > TOL){
         this->is_moving = 1;
 
         if (this->target_value > current_value){// move forwards
-            actuator.writeMicroseconds(FORWARDS);
-            //Serial.println("[Break Controller] Moving forwards");
+            digitalWrite(this->relay_pin_1, HIGH);
+            digitalWrite(this->relay_pin_2, LOW);
         }else{
-            actuator.writeMicroseconds(BACKWARDS);
-            //Serial.println("[Break Controller] Moving backwards");
+            digitalWrite(this->relay_pin_1, LOW);
+            digitalWrite(this->relay_pin_2, HIGH);
         }
     }
-    else{
-        actuator.writeMicroseconds(STOP);
+    else {
+        //Serial.println("[Gear Controller] Stopping");
+        resetGearStates();
         this->is_moving = 0;
     }
 }
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void GearController::loop(uint8_t rate)
 {
+  // set both gears to low, ensure we only turn one way 
+  resetGearStates();
+
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
-    // Execute code
+    
+    // get current pos of the gear
     float current_value = analogRead(this->potentiometer_pin);
 
     if(abs(this->target_value - current_value) > TOL){
         this->is_moving = 1;
 
         if (this->target_value > current_value){// move forwards
-            actuator.writeMicroseconds(HIGH);
-            //Serial.println("[Break Controller] Moving forwards");
+            digitalWrite(this->relay_pin_1, HIGH);
+            digitalWrite(this->relay_pin_2, LOW);
         }else{
-            actuator.writeMicroseconds(LOW);
-            //Serial.println("[Break Controller] Moving backwards");
+            digitalWrite(this->relay_pin_1, LOW);
+            digitalWrite(this->relay_pin_2, HIGH);
         }
     } else if (this->is_moving){
-      //Serial.println("[Break Controller] Stopping");
-      actuator.writeMicroseconds(STOP);
-        this->is_moving = 0;
+      //Serial.println("[Gear Controller] Stopping");
+      resetGearStates();
+      this->is_moving = 0;
     }
 
   }
