@@ -9,12 +9,12 @@ class GpsController
 {
 	public:
 		GpsController(uint8_t debug);
-		void Setup();
-		bool CheckFix();
-		float RunLoop();
-		float GetLat();
-		float GetLong();
-		float GetAngle();
+		void setup();
+		bool checkFix();
+		float loop();
+		float getLat();
+		float getLong();
+		float getAngle();
 	private:
 		float GpsLat;
 		float GpsLong;
@@ -25,23 +25,23 @@ class GpsController
 GpsController::GpsController(uint8_t debug)
 {
 	this->debug = debug;
-	if (debug) {
-    	Serial.print(CLASS_NAME);
-    	Serial.println(": initialised");
-  }
 }
 
-GpsController::Setup()
+GpsController::setup()
 {
-	  Serial.begin(115200);
-	  GPS.begin(9600);
-	  GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-	  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
-	  GPS.sendCommand(PGCMD_ANTENNA);
-	  delay(1000); // This is needed for some reason 
+	if (debug) {
+		Serial.print(CLASS_NAME);
+		Serial.println(": initialised");
+	}
+	Serial.begin(115200);
+	GPS.begin(9600);
+	GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+	GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
+	GPS.sendCommand(PGCMD_ANTENNA);
+	delay(1000); // This is needed for some reason 
 }
 
-GpsController::CheckFix()
+GpsController::checkFix()
 {	char c = GPS.read();
 	if (GPS.fix) {
 		Serial.print("GPS Fixed");
@@ -53,7 +53,7 @@ GpsController::CheckFix()
 	}
 }
 
-GpsController::RunLoop()
+GpsController::loop()
 {
 	char c = GPS.read()
 	if (GPS.fix){
@@ -63,17 +63,17 @@ GpsController::RunLoop()
 	}
 }
 
-GpsController::GetLat()
+GpsController::getLat()
 {
 	return GpsLat;
 }
 
-GpsController::GetLong()
+GpsController::getLong()
 {
 	return GpsLong;
 }
 
-GpsController::GetAngle()
+GpsController::getAngle()
 {
 	return GpsAngle;
 }
