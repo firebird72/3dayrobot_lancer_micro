@@ -3,8 +3,6 @@
 const uint8_t MIN_BRAKE     = 1; // Position of actuator in millimetres
 const uint8_t MAX_BRAKE     = 50; // Position of actuator in millimetres
 
-const uint8_t MAX_LENGTH_MM = 50;
-
 #define BACKWARDS 0
 #define FORWARDS 3000
 #define STOP 1500
@@ -18,9 +16,12 @@ class BrakeController
   public:
     BrakeController(uint8_t debug);
 
-    void setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time);
+    void setTargetPosition(uint16_t target_pos, uint16_t time);
     float getCurrentPosition();
     void setup();
+    void start();
+    void stop();
+    void run(); // maybe not needed
     void loop(uint8_t rate);
 
     uint8_t  getMovingStatus();
@@ -70,8 +71,20 @@ uint8_t BrakeController::getMovingStatus()
   return this->is_moving;
 }
 
+void BrakeController::start() {
+  digitalWrite(this->potentiometer_pin, HIGH);
+}
+
+void BrakeController::stop() {
+  digitalWrite(this->potentiometer_pin, LOW);
+}
+
+void BrakeController::run() {
+
+}
+
 // Move the linear actuator to a target position in millimetres over time in milliseconds
-void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time)
+void BrakeController::setTargetPosition(uint16_t target_pos, uint16_t time)
 {
     this->target_value = (float)target_pos;
 
@@ -80,16 +93,17 @@ void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uin
     if(abs(this->target_value - current_value) > BREAK_TOL){
         this->is_moving = 1;
 
-        if (this->target_value > current_value){// move forwards
-            actuator.writeMicroseconds(FORWARDS);
-            //Serial.println("[Break Controller] Moving forwards");
+        if (this->target_value > current_value){
+              // move forwards
+            digitalWrite(this->potentiometer_pin, HIGH);
+              //Serial.println("[Break Controller] Moving forwards");
         }else{
-            actuator.writeMicroseconds(BACKWARDS);
+            digitalWrite(this->potentiometer_pin, LOW);
             //Serial.println("[Break Controller] Moving backwards");
         }
     }
     else{
-      actuator.writeMicroseconds(STOP);
+        this->actuator.writeMicroseconds(STOP);
         this->is_moving = 0;
     }
 

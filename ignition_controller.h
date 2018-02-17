@@ -6,6 +6,7 @@ class IgnitionController
     void setup();
     void start();
     void stop();
+    void run();
     void loop(uint8_t rate);
 
     uint16_t  getCurrentStatus();
@@ -81,9 +82,8 @@ void IgnitionController::stop()
 void IgnitionController::run() {
   if (current_status )
     digitalWrite(IGNITION_START_PIN, LOW);
-    digitalWrite(IGNITION_RUN_PIN, HIGH);ssssssssssss
+    digitalWrite(IGNITION_RUN_PIN, HIGH);
 }
-
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void IgnitionController::loop(uint8_t rate)
 {
