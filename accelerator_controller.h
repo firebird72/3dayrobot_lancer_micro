@@ -23,6 +23,7 @@ class AcceleratorController
     void start();
     void stop();
     void run();
+    uint16_t clipValue(uint16_t target_value);
     void loop(uint8_t rate);
 
     uint8_t  getMovingStatus();
@@ -79,7 +80,7 @@ void AcceleratorController::start() {
 }
 
 void AcceleratorController::stop() {
-  actuator.writeMicroseconds(BACKWARDS);
+  actuator.writeMicroseconds(STOP);
 }
 
 void AcceleratorController::run() {
@@ -89,7 +90,7 @@ void AcceleratorController::run() {
 uint16_t AcceleratorController::clipValue(uint16_t target_value) {
   if (target_value > MOTOR1_MIN) {
     target_value = MOTOR1_MAX;
-  } else (target_value < MOTOR1_MIN) {
+  } else if (target_value < MOTOR1_MIN) {
     target_value = MOTOR1_MIN;
   }
 
@@ -106,7 +107,7 @@ void AcceleratorController::setTargetPosition(Servo actuator, uint16_t target_po
     
     if(abs(this->target_value - current_value) > ACCELERATOR_TOL){
         this->is_moving = 1;
-        if (this->target_value > current_value){// move forwards
+        if (this->target_value >= current_value){// move forwards
             actuator.writeMicroseconds(FORWARDS);
         } else {
             actuator.writeMicroseconds(BACKWARDS);
@@ -134,17 +135,14 @@ void AcceleratorController::loop(uint8_t rate)
         if (this->target_value >= current_value){// move forwards
             uint8_t value = map(FORWARDS, 0, 1023, 0, 179); 
             this->actuator.write(value);
-            //if (debug) Serial.println("[Accelerator Controller] Moving forwards");
         }else{
             uint8_t value = map(BACKWARDS, 0, 1023, 0, 179); 
             this->actuator.write(value);
-            //if (debug) Serial.println("[Accelerator Controller] backwards");
         }
     }
     else if (this->is_moving){
-      //Serial.println("[Break Controller] Stopping");
       actuator.writeMicroseconds(STOP);
-        this->is_moving = 0;
+      this->is_moving = 0;
     }
   }
 }
