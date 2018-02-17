@@ -58,6 +58,23 @@ void logic() {
     } else if (ignition_status == 1 && dataparser.getExpectedIgnitionStatus() == 0) {
     	ignitionController.stop();
     }
+
+    if (brake_status == 0 && dataParser.getExpectedBrakeStatus() == 1) {
+        brakeController.start();
+    } else if (brake_status == 1 && dataParser.getExpectedBrakeStatus() == 1) {
+    	brakeController.run();
+    } else if (brake_status == 1 && dataparser.getExpectedBrakeStatus() == 0) {
+    	brakeController.stop();
+    }
+
+    if (acceleration_status == 0 && dataParser.getExpectedAccelerationStatus() == 1) {
+        brakeController.start();
+    } else if (acceleration_status == 1 && dataParser.getExpectedAccelerationStatus() == 1) {
+    	brakeController.run();
+    } else if (acceleration_status == 1 && dataparser.getExpectedAccelerationStatus() == 0) {
+    	brakeController.stop();
+    }
+
   }
 
 }
