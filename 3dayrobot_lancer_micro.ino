@@ -42,16 +42,21 @@ void loop() {
 }
 
 void logic() {
-
+  
   if (Serial.available()) {
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
 
+    Serial.println("WHAT");
+    Serial.println(dataParser.getExpectedIgnitionStatus());
     if (ignition_status == 0 && dataParser.getExpectedIgnitionStatus() == 1) {
+    	Serial.println("JBSFJSBF");
         ignitionController.start();
+        //digitalWrite(LED_BUILTIN, LOW);
         start_time = millis();
     } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 1 && millis() > start_time + ignition_interval) {
     	ignitionController.stop();
+    	//digitalWrite(LED_BUILTIN, LOW);
     }
   }
 
