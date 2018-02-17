@@ -41,6 +41,9 @@ class DataParser
 DataParser::DataParser(uint8_t debug)
 {
   this->debug = debug;
+}
+
+void DataParser::setup() {
   if (debug) {
     Serial.print(CLASS_NAME);
     Serial.println(": initialised");
