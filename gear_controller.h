@@ -1,9 +1,4 @@
-#include <Servo.h>
-
 class GearController
-#define DRIVE   457
-#define REVERSE 312
-#define NEUTRAL 367
 
 {
   public:
@@ -11,15 +6,16 @@ class GearController
 
     void setup();
 
-    void     resetGearStates();
-    void     setTargetPosition(uint8_t target_gear);
+    void     resetGearState();
+    void     setTargetPosition(uint16_t target_gear);
     void     loop(uint8_t rate);
 
-    //uint16_t getCurrentPosition();
     uint8_t  getMovingStatus();
     uint16_t getCurrentPosition();
 
   private:
+    void     _updateCurrentPosition();
+
     uint8_t   debug;
     uint8_t   moving;
     uint8_t   is_moving;
@@ -49,11 +45,16 @@ void GearController::setup() {
   }
 }
 
+// Update the current position of the potentiometer
+void GearController::_updateCurrentPosition()
+{
+    this->current_value = analogRead(this->FEEDBACK_PIN);
+}
+
 // Return the value of the potentiometer
 uint16_t GearController::getCurrentPosition()
 {
-    this->current_value = analogRead(this->FEEDBACK_PIN);
-    return current_value;
+    return this->current_value;
 }
 
 // Return whether the linear actuator is actually moving at the moment
@@ -63,12 +64,12 @@ uint8_t GearController::getMovingStatus()
 }
 
 // Set the target position for the  
-void GearController::setTargetPosition(uint8_t target_gear)
+void GearController::setTargetPosition(uint8_t target_value)
 {
     this->target_value = target_value;
 }
 
-void GearController::resetGearStates() {
+void GearController::resetGearState() {
   digitalWrite(CONTRACT_PIN, LOW);
   digitalWrite(EXTEND_PIN, LOW);
 }
@@ -76,12 +77,14 @@ void GearController::resetGearStates() {
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void GearController::loop(uint8_t rate)
 {
+  // find out where we are
+  _updateCurrentPosition();
+
   // set both gears to low, ensure we only turn one way 
-  resetGearStates();
+  resetGearState();
 
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
-    current_value = getCurrentPosition();
 
     if(abs(this->target_value - current_value) > tolerance){
         this->is_moving = 1;
@@ -94,9 +97,8 @@ void GearController::loop(uint8_t rate)
             digitalWrite(this->CONTRACT_PIN, HIGH);
         }
     } else if (this->is_moving){
-      resetGearStates();
+      resetGearState();
       this->is_moving = 0;
     }
-
   }
 }
