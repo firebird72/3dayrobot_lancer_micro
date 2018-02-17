@@ -30,7 +30,7 @@ class BrakeController
     uint8_t   debug;
     uint8_t   moving;
     uint16_t  target_pos;
-    uint16_t  target_percent;
+    uint16_t  target_value;
     uint16_t  time;
 
     uint8_t   is_moving;
@@ -75,15 +75,14 @@ uint8_t BrakeController::getMovingStatus()
 // Move the linear actuator to a target position in millimetres over time in milliseconds
 void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time)
 {
-  this->target_percent = 100 * (float)target_pos / MAX_LENGTH_MM;
+  this->target_value = (float)target_pos;
 
-    float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
-                                    / (MOTOR1_MAX - MOTOR1_MIN);
+    float current_value = analogRead(this->potentiometer_pin);
     
-    if(abs(this->target_percent - current_percent) > BREAK_TOL){
+    if(abs(this->target_value - current_value) > BREAK_TOL){
         this->is_moving = 1;
 
-        if (this->target_percent > current_percent){// move forwards
+        if (this->target_value > current_value){// move forwards
             actuator.writeMicroseconds(FORWARDS);
             Serial.println("[Break Controller] Moving forwards");
         }else{
@@ -106,13 +105,13 @@ void BrakeController::loop(uint8_t rate)
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
     // Execute code
-    float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
+    float current_value = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
                                     / (MOTOR1_MAX - MOTOR1_MIN);
 
-    if(abs(this->target_percent - current_percent) > BREAK_TOL){
+    if(abs(this->target_value - current_value) > BREAK_TOL){
         this->is_moving = 1;
 
-        if (this->target_percent > current_percent){// move forwards
+        if (this->target_value > current_value){// move forwards
             //actuator.writeMicroseconds(FORWARDS);
             Serial.println("[Break Controller] Moving forwards");
         }else{
