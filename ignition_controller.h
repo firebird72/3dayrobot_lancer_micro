@@ -1,13 +1,9 @@
-const uint8_t IGNITION_START_PIN  = 1; // Digital pin connected to the first relay on the ignition
-const uint8_t IGNITION_RUN_PIN    = 2; // Digital pin connected to the first relay on the ignition
-const uint8_t CAR_STOPPED         = 0;
-const uint8_t CAR_STARTED         = 1;
-
 class IgnitionController
 {
   public:
     IgnitionController(uint8_t debug);
 
+    void setup();
     void start();
     void stop();
     void loop(uint8_t rate);
@@ -20,8 +16,12 @@ class IgnitionController
     uint8_t   debug;
     uint8_t   current_status; // CAR_STOPPED vs CAR_STARTED
     uint16_t  nextMillis;
-    
-    const char* CLASS_NAME = "IgnitionController";
+
+    const uint8_t IGNITION_START_PIN  = 1; // Digital pin connected to the first relay on the ignition
+    const uint8_t IGNITION_RUN_PIN    = 2; // Digital pin connected to the first relay on the ignition
+    const uint8_t CAR_STOPPED         = 0;
+    const uint8_t CAR_STARTED         = 1;
+    const char*   CLASS_NAME          = "IgnitionController";
 };
 
 // Initialise the IgnitionController
@@ -30,16 +30,18 @@ IgnitionController::IgnitionController(uint8_t debug)
 {
   this->debug = debug;
 
-  if (debug) {
-    Serial.print(CLASS_NAME);
-    Serial.println(": initialised");
-  }
-
   pinMode(IGNITION_START_PIN, OUTPUT);
   pinMode(IGNITION_RUN_PIN, OUTPUT);
 
   digitalWrite(IGNITION_START_PIN, LOW);
   digitalWrite(IGNITION_RUN_PIN, LOW);
+}
+
+void IgnitionController::setup() {
+  if (debug) {
+    Serial.print(CLASS_NAME);
+    Serial.println(": initialised");
+  }
 }
 
 // Return whether car has started
@@ -67,6 +69,21 @@ void IgnitionController::start()
   }
 }
 
+void IgnitionController::stop()
+{
+  if (current_status != CAR_STOPPED) {
+    digitalWrite(IGNITION_START_PIN, LOW);
+    digitalWrite(IGNITION_RUN_PIN, LOW);
+  }
+}
+
+
+void IgnitionController::run() {
+  if (current_status )
+    digitalWrite(IGNITION_START_PIN, LOW);
+    digitalWrite(IGNITION_RUN_PIN, HIGH);ssssssssssss
+}
+
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void IgnitionController::loop(uint8_t rate)
 {
@@ -78,4 +95,6 @@ void IgnitionController::loop(uint8_t rate)
       digitalWrite(IGNITION_RUN_PIN, LOW);
     }
   }
+
+
 }
