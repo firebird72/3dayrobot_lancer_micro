@@ -5,7 +5,7 @@
 #include "data_parser.h"
 #include "accelerator_controller.h"
 
-#define DEBUG true
+#define DEBUG 1
 
 
 IgnitionController 		ignitionController(true);
@@ -53,8 +53,9 @@ void loop() {
 }
 
 void logic() {
-
+  Serial.print("Outisde of logic loop.\n");
   if (Serial.available()) {
+  	Serial.println("Begin logic\n");
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
 
