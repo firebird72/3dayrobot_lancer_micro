@@ -83,10 +83,10 @@ void AcceleratorController::setTargetPosition(Servo actuator, uint16_t target_po
 
         if (this->target_value > current_value){// move forwards
             actuator.writeMicroseconds(FORWARDS);
-            Serial.println("[Break Controller] Moving forwards");
+            //Serial.println("[Break Controller] Moving forwards");
         }else{
             actuator.writeMicroseconds(BACKWARDS);
-            Serial.println("[Break Controller] Moving backwards");
+            //Serial.println("[Break Controller] Moving backwards");
         }
     }
     else{
@@ -110,14 +110,14 @@ void AcceleratorController::loop(uint8_t rate)
 
         if (this->target_value > current_value){// move forwards
             actuator.writeMicroseconds(FORWARDS);
-            Serial.println("[Break Controller] Moving forwards");
+            //Serial.println("[Break Controller] Moving forwards");
         }else{
             actuator.writeMicroseconds(BACKWARDS);
-            Serial.println("[Break Controller] Moving backwards");
+            //Serial.println("[Break Controller] Moving backwards");
         }
     }
     else if (this->is_moving){
-      Serial.println("[Break Controller] Stopping");
+      //Serial.println("[Break Controller] Stopping");
       actuator.writeMicroseconds(STOP);
         this->is_moving = 0;
     }

@@ -13,7 +13,6 @@ const uint8_t MAX_LENGTH_MM = 50;
 #define MOTOR1_MAX 660
 #define MOTOR1_MIN 400
 
-
 class BrakeController
 {
   public:
@@ -83,10 +82,10 @@ void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uin
 
         if (this->target_value > current_value){// move forwards
             actuator.writeMicroseconds(FORWARDS);
-            Serial.println("[Break Controller] Moving forwards");
+            //Serial.println("[Break Controller] Moving forwards");
         }else{
             actuator.writeMicroseconds(BACKWARDS);
-            Serial.println("[Break Controller] Moving backwards");
+            //Serial.println("[Break Controller] Moving backwards");
         }
     }
     else{
@@ -110,11 +109,13 @@ void BrakeController::loop(uint8_t rate)
         this->is_moving = 1;
 
         if (this->target_value > current_value){// move forwards
-            actuator.writeMicroseconds(FORWARDS);
-            Serial.println("[Break Controller] Moving forwards");
+            //actuator.writeMicroseconds(FORWARDS);
+            digitalWrite(this->potentiometer_pin, HIGH);
+            //Serial.println("LOOP: [Break Controller] Moving forwards");
         }else{
-            actuator.writeMicroseconds(BACKWARDS);
-            Serial.println("[Break Controller] Moving backwards");
+            digitalWrite(this->potentiometer_pin, LOW);
+            //actuator.writeMicroseconds(BACKWARDS);
+            //Serial.println("LOOP: [Break Controller] Moving backwards");
         }
     }
     else if (this->is_moving){
