@@ -6,6 +6,7 @@ class DataParser
   public:
     DataParser(uint8_t debug);
 
+    void setup();
     void parseExternalData(String data);
     void loop(uint8_t rate);
 
