@@ -6,7 +6,7 @@ const uint8_t MAX_ACCELERATOR     = 50; // Position of actuator in millimetres
 #define BACKWARDS 0
 #define FORWARDS 3000
 #define STOP 1500
-#define ACCELERATOR_TOL 1
+#define ACCELERATOR_TOL 10
 
 #define MOTOR1_MAX 660
 #define MOTOR1_MIN 400
@@ -18,7 +18,7 @@ class AcceleratorController
     AcceleratorController(uint8_t debug);
 
     void setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time);
-    float getCurrentPosition();
+    uin getCurrentPosition();
     void setup();
     void start();
     void stop();
@@ -51,7 +51,6 @@ AcceleratorController::AcceleratorController(uint8_t debug)
   this->debug = debug;
   this->is_moving = 0;
 
-
   this->actuator.attach(actuator_pin);  // attaches the RC signal on pin 5 to the servo object 
 }
 
@@ -63,7 +62,7 @@ void AcceleratorController::setup() {
 }
 
 // Return the current position of the linear actuator in millimetres
-float AcceleratorController::getCurrentPosition()
+uint16_t AcceleratorController::getCurrentPosition()
 {
   return analogRead(this->potentiometer_pin);
 }
@@ -74,6 +73,7 @@ uint8_t AcceleratorController::getMovingStatus()
   return this->is_moving;
 }
 
+// for remote control
 void AcceleratorController::start() {
   actuator.writeMicroseconds(FORWARDS);
 }
@@ -86,10 +86,21 @@ void AcceleratorController::run() {
 
 }
 
+uint16_t AcceleratorController::clipValue(uint16_t target_value) {
+  if (target_value > MOTOR1_MIN) {
+    target_value = MOTOR1_MAX;
+  } else (target_value < MOTOR1_MIN) {
+    target_value = MOTOR1_MIN;
+  }
+
+  return target_value;
+}
+
 // Move the linear actuator to a target position in millimetres over time in milliseconds
 void AcceleratorController::setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time)
 {
-    this->target_value = (float)target_pos;
+    this->target_value = (uint16_t)target_pos;
+    this->target_value = clipValue(this->target_value);
 
     float current_value = analogRead(this->potentiometer_pin);
     
