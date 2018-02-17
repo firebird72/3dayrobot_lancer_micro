@@ -38,7 +38,7 @@ class AcceleratorController
     uint16_t  nextMillis;
     
     const char*   CLASS_NAME = "AcceleratorController";
-    const uint8_t actuator_pin;
+    const uint8_t actuator_pin = 5;
     const uint8_t potentiometer_pin = 3;
 
     Servo actuator;
@@ -49,8 +49,10 @@ class AcceleratorController
 AcceleratorController::AcceleratorController(uint8_t debug)
 {
   this->debug = debug;
-  is_moving = 0;
-  //actuator.attach(actuator_pin);  // attaches the RC signal on pin 5 to the servo object 
+  this->is_moving = 0;
+
+
+  this->actuator.attach(actuator_pin);  // attaches the RC signal on pin 5 to the servo object 
 }
 
 void AcceleratorController::setup() {
@@ -93,13 +95,10 @@ void AcceleratorController::setTargetPosition(Servo actuator, uint16_t target_po
     
     if(abs(this->target_value - current_value) > ACCELERATOR_TOL){
         this->is_moving = 1;
-
         if (this->target_value > current_value){// move forwards
             actuator.writeMicroseconds(FORWARDS);
-            //Serial.println("[Break Controller] Moving forwards");
-        }else{
+        } else {
             actuator.writeMicroseconds(BACKWARDS);
-            //Serial.println("[Break Controller] Moving backwards");
         }
     }
     else{
