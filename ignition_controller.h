@@ -68,7 +68,7 @@ void IgnitionController::start()
     digitalWrite(IGNITION_START_PIN, HIGH);
     digitalWrite(IGNITION_RUN_PIN, HIGH);
     digitalWrite(13, HIGH);
-    delay(3000);
+    delay(500);
     digitalWrite(IGNITION_START_PIN, LOW);
   }
 }
