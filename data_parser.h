@@ -19,20 +19,19 @@ class DataParser
   private:
     uint8_t  getExpectedStatus();
 
-    uint8_t  debug;
-
-    const char    MESSAGE_LENGTH        = 23;
     
-    const char* CLASS_NAME = "DataParser";
+    const char* CLASS_NAME      = "DataParser";
+    const char  MESSAGE_LENGTH  = 23;
 
     uint16_t steering_position;
     uint16_t brake_position;
     uint16_t accelerator_position;
     uint16_t gear_position;
+    uint16_t nextMillis;
     uint8_t  autonomy_status;
     uint8_t  ignition_status;
     uint8_t  kill_status;
-    uint16_t nextMillis;
+    uint8_t  debug;
 
 };
 
