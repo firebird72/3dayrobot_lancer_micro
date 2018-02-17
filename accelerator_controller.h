@@ -18,7 +18,7 @@ class AcceleratorController
     AcceleratorController(uint8_t debug);
 
     void setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time);
-    uin getCurrentPosition();
+    uint16_t getCurrentPosition();
     void setup();
     void start();
     void stop();
@@ -131,7 +131,7 @@ void AcceleratorController::loop(uint8_t rate)
     if(abs(this->target_value - current_value) > ACCELERATOR_TOL){
         this->is_moving = 1;
 
-        if (this->target_value > current_value){// move forwards
+        if (this->target_value >= current_value){// move forwards
             uint8_t value = map(FORWARDS, 0, 1023, 0, 179); 
             this->actuator.write(value);
             //if (debug) Serial.println("[Accelerator Controller] Moving forwards");
