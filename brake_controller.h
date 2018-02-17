@@ -110,10 +110,10 @@ void BrakeController::loop(uint8_t rate)
         this->is_moving = 1;
 
         if (this->target_value > current_value){// move forwards
-            //actuator.writeMicroseconds(FORWARDS);
+            actuator.writeMicroseconds(FORWARDS);
             Serial.println("[Break Controller] Moving forwards");
         }else{
-            //actuator.writeMicroseconds(BACKWARDS);
+            actuator.writeMicroseconds(BACKWARDS);
             Serial.println("[Break Controller] Moving backwards");
         }
     }
