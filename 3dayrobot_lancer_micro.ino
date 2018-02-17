@@ -11,7 +11,9 @@ DataParser         dataParser(true);
 
 void setup() {
   Serial.begin(9600);
+  brakeController.setup();
 }
 
 void loop() {
+  brakeController.loop();
 }

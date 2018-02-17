@@ -21,6 +21,7 @@ class BrakeController
 
     void setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time);
     float getCurrentPosition();
+    void setup();
     void loop(Servo actuator, uint8_t rate);
 
     uint8_t  getMovingStatus();
@@ -31,13 +32,13 @@ class BrakeController
     uint16_t  target_pos;
     uint16_t  target_percent;
     uint16_t  time;
-    uint8_t actuator_pin;
-    uint8_t potentiometer_pin;
 
-    uint8_t is_moving;
+    uint8_t   is_moving;
     uint16_t  nextMillis;
     
-    const char* CLASS_NAME = "BrakeController";
+    const char*   CLASS_NAME = "BrakeController";
+    const uint8_t actuator_pin;
+    const uint8_t potentiometer_pin;
 };
 
 // Initialise the BrakeController
@@ -45,19 +46,16 @@ class BrakeController
 BrakeController::BrakeController(uint8_t debug)
 {
   this->debug = debug;
+  is_moving = 0;
+  this->potentiometer_pin = 0;
+  //actuator.attach(actuator_pin);  // attaches the RC signal on pin 5 to the servo object 
+}
+
+void BrakeController::setup() {
   if (debug) {
     Serial.print(CLASS_NAME);
     Serial.println(": initialised");
   }
-
-  is_moving = 0;
-
-
-  //actuator_pin = 3;
-  this->potentiometer_pin = 0;
-
-  //actuator.attach(actuator_pin);  // attaches the RC signal on pin 5 to the servo object 
-
 }
 
 // Return the current position of the linear actuator in millimetres
@@ -126,6 +124,5 @@ void BrakeController::loop(Servo actuator, uint8_t rate)
       actuator.writeMicroseconds(STOP);
         this->is_moving = 0;
     }
-
   }
 }
