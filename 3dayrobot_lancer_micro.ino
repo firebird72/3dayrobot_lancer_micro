@@ -11,7 +11,7 @@ IgnitionController 		ignitionController(true);
 BrakeController    		brakeController(false);
 GearController     	  	gearController(false);
 AcceleratorController 	acceleratorController(false);
-DataParser         		dataParser(false);
+DataParser         		dataParser(true);
 
 uint16_t steering_position;
 uint16_t brake_position;
@@ -121,14 +121,12 @@ void logic() {
 
     Serial.println("Checking gears");
     if (expected_gear_position != gear_position) {
-    	Serial.println("no matchy");
     	gearController.setTargetPosition(expected_gear_position);
-    	Serial.println(expected_gear_position);
     	if (expected_gear_position == 312) {
     		Serial.println("Reverse");
     	} else if (expected_gear_position == 457) {
     		Serial.println("Drive");
-    	} else if (expected_gear_position === 367) {
+    	} else if (expected_gear_position == 367) {
     		Serial.println("Neutral");
     	}
     }
@@ -140,7 +138,7 @@ void logic() {
   		Serial.print("0000"); //steering position padding
   		Serial.print(brake_position); //brake position
   		Serial.print(accelerator_position); // accelerator position
-  		Serial.print("0000"); //gear position
+  		Serial.print(gear_position); //gear position
   		Serial.print("0"); //autonomy status
   		Serial.print(ignition_status); //ignition status
   		Serial.print("0"); //kill status

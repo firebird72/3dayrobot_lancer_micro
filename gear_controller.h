@@ -81,7 +81,7 @@ void GearController::loop(uint8_t rate)
 
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
-    getCurrentPosition();
+    current_value = getCurrentPosition();
 
     if(abs(this->target_value - current_value) > tolerance){
         this->is_moving = 1;
