@@ -67,6 +67,7 @@ void IgnitionController::start()
   if (current_status != CAR_STARTED) {
     digitalWrite(IGNITION_START_PIN, HIGH);
     digitalWrite(IGNITION_RUN_PIN, HIGH);
+    digitalWrite(13, HIGH);
   }
 }
 
@@ -75,6 +76,7 @@ void IgnitionController::stop()
   if (current_status != CAR_STOPPED) {
     digitalWrite(IGNITION_START_PIN, LOW);
     digitalWrite(IGNITION_RUN_PIN, LOW);
+    digitalWrite(13, LOW);
   }
 }
 

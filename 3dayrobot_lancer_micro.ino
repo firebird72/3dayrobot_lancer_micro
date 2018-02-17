@@ -7,7 +7,6 @@
 
 #define DEBUG 1
 
-
 IgnitionController 		ignitionController(true);
 BrakeController    		brakeController(true);
 GearController     	  	gearController(true);
@@ -22,6 +21,9 @@ uint8_t  autonomy_status = 0;
 uint8_t  ignition_status = 0;
 uint8_t  kill_status = 0;
 uint8_t  debug = 1;
+
+uint8_t  nextMillis = 0; 
+uint8_t  rate = 200;
 
 /* 
 	Timing mechanisms if we want to only allow commands after a certain
@@ -59,39 +61,63 @@ void logic() {
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
 
-    if (ignition_status == 0 && dataParser.getExpectedIgnitionStatus() == 1) {
+    uint16_t expected_ignition_status = dataParser.getExpectedIgnitionStatus();
+    ignition_status = ignitionController.getCurrentStatus();
+
+    if (ignition_status == 0 && expected_ignition_status == 1) {
         ignitionController.start();
         if (DEBUG) Serial.println("Ignit on");
-    } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 1) {
+    } else if (ignition_status == 1 && expected_ignition_status == 1) {
     	ignitionController.run();
     	if (DEBUG) Serial.println("Ignit run");
-    } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 0) {
+    } else if (ignition_status == 1 && expected_ignition_status == 0) {
     	if (DEBUG) Serial.println("Ignit stop");
     	ignitionController.stop();
     }
 
-     if (brake_position == 0 && dataParser.getExpectedBrakePosition() == 1) {
+    uint16_t expected_brake_status = dataParser.getExpectedBrakePosition();
+    brake_position = brakeController.getCurrentPosition();
+
+    if (brake_position == 0 && expected_brake_status == 1) {
       	if (DEBUG) Serial.println("Brake on");
         brakeController.start();
-    } else if (brake_position == 1 && dataParser.getExpectedBrakePosition() == 1) {
+    } else if (brake_position == 1 && expected_brake_status == 1) {
     	if (DEBUG) Serial.println("Brake run");
     	brakeController.run();
-    } else if (brake_position == 1 && dataParser.getExpectedBrakePosition() == 0) {
+    } else if (brake_position == 1 && expected_brake_status == 0) {
     	if (DEBUG) Serial.println("Brake on");
     	brakeController.stop();
     }
 
-     if (accelerator_position == 0 && dataParser.getExpectedAcceleratorPosition() == 1) {
+    uint16_t expected_accelerator_status = dataParser.getExpectedAcceleratorPosition();
+    accelerator_position = acceleratorController.getCurrentPosition();
+
+    if (accelerator_position == 0 && expected_accelerator_status == 1) {
         acceleratorController.start();
         if (DEBUG) Serial.println("Accel on");
-    } else if (accelerator_position == 1 && dataParser.getExpectedAcceleratorPosition() == 1) {
+    } else if (accelerator_position == 1 && expected_accelerator_status == 1) {
     	if (DEBUG) Serial.println("Accel run");
     	acceleratorController.run();
-    } else if (accelerator_position == 1 && dataParser.getExpectedAcceleratorPosition() == 0) {
+    } else if (accelerator_position == 1 && expected_accelerator_status == 0) {
     	if (DEBUG) Serial.println("Accel stop");
     	acceleratorController.stop();
     }
   
+  	// writing back over serial comms
+  	if (millis() >= nextMillis) {
+  		nextMillis = millis + rate;
+
+  		Serial.print("0000"); //steering position padding
+  		Serial.print(brake_position); //brake position
+  		Serial.print(accelerator_position); // accelerator position
+  		Serial.print("0000"); //gear position
+  		Serial.print("0"); //autonomy status
+  		Serial.print(ignition_status); //ignition status
+  		Serial.print("0"); //kill status
+  		Serial.print("0000"); //checksum
+  		Serial.print("\n");
+
+  	}
 
   }
 
