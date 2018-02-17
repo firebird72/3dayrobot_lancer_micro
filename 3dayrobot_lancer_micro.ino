@@ -19,6 +19,10 @@ uint8_t  ignition_status = 0;
 uint8_t  kill_status = 0;
 uint8_t  debug = 1;
 
+/* 
+	Timing mechanisms if we want to only allow commands after a certain
+	period of time
+*/
 uint8_t ignition_interval = 5000; //ms
 uint16_t start_time = 0;
 
@@ -42,21 +46,17 @@ void loop() {
 }
 
 void logic() {
-  
+
   if (Serial.available()) {
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
 
-    Serial.println("WHAT");
-    Serial.println(dataParser.getExpectedIgnitionStatus());
     if (ignition_status == 0 && dataParser.getExpectedIgnitionStatus() == 1) {
-    	Serial.println("JBSFJSBF");
         ignitionController.start();
-        //digitalWrite(LED_BUILTIN, LOW);
-        start_time = millis();
-    } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 1 && millis() > start_time + ignition_interval) {
+    } else if (ignition_status == 1 && dataParser.getExpectedIgnitionStatus() == 1) {
+    	ignitionController.run();
+    } else if (ignition_status == 1 && dataparser.getExpectedIgnitionStatus() == 0) {
     	ignitionController.stop();
-    	//digitalWrite(LED_BUILTIN, LOW);
     }
   }
 
