@@ -1,5 +1,5 @@
 // Message Format:
-// #[steering_position(4)],[brake_position(4)],[accelerator_position(4)],[gear_position(1)],[autonomy_status(1)],[ignition_status(1)]\n
+// [steering_position(4)][brake_position(4)][accelerator_position(4)][gear_position(4)][autonomy_status(1)][ignition_status(1)][kill_status(1)][checksum(4)]\n
 
 class DataParser
 {
@@ -21,18 +21,17 @@ class DataParser
 
     uint8_t  debug;
 
-    const char    MESSAGE_START         = '#';
-    const char    MESSAGE_END           = '\n';
-    const char    MESSAGE_LENGTH        = 24;
+    const char    MESSAGE_LENGTH        = 23;
     
     const char* CLASS_NAME = "DataParser";
 
     uint16_t steering_position;
     uint16_t brake_position;
     uint16_t accelerator_position;
-    uint8_t  gear_position;
+    uint16_t gear_position;
     uint8_t  autonomy_status;
     uint8_t  ignition_status;
+    uint8_t  kill_status;
     uint16_t nextMillis;
 
 };
@@ -49,20 +48,28 @@ DataParser::DataParser(uint8_t debug)
 }
 
 void DataParser::parseExternalData(String data) {
-  if (data.length() == 26) {
-    if (data.substring(0,1) == MESSAGE_START && data.substring(MESSAGE_LENGTH - 1, 1) == MESSAGE_END) {
-      steering_position     = (uint16_t) data.substring(0,  3).toInt();
-      brake_position        = (uint16_t) data.substring(4,  8).toInt();
-      accelerator_position  = (uint16_t) data.substring(8,  12).toInt();
-      gear_position         = (uint8_t)  data.substring(12, 16).toInt();
-      autonomy_status       = (uint8_t)  data.substring(16, 20).toInt();
-      ignition_status       = (uint8_t)  data.substring(20, 24).toInt();
-    } else {
-      if (debug) {
-        Serial.print(CLASS_NAME);
-        Serial.println(": ERROR: parseExternalData: Invalid MESSAGE_START or MESSAGE_END");
+  if (data.length() == MESSAGE_LENGTH) {
+      uint16_t _steering_position     = (uint16_t) data.substring(0,  3).toInt();
+      uint16_t _brake_position        = (uint16_t) data.substring(4,  8).toInt();
+      uint16_t _accelerator_position  = (uint16_t) data.substring(9,  13).toInt();
+      uint16_t _gear_position         = (uint16_t) data.substring(14, 18).toInt();
+      uint16_t _checksum              = (uint16_t) data.substring(MESSAGE_LENGTH - 4, MESSAGE_LENGTH).toInt();
+
+      if (_steering_position + _brake_position + _accelerator_position + _gear_position == _checksum) {
+        steering_position     = _steering_position;
+        brake_position        = _brake_position;
+        accelerator_position  = _accelerator_position;
+        gear_position         = _gear_position;
+        autonomy_status       = (uint8_t)  data.substring(19, 19).toInt();
+        ignition_status       = (uint8_t)  data.substring(20).toInt();
+        kill_status           = (uint8_t)  data.substring(21).toInt();
+      } else {
+        if (debug) {
+          Serial.print(CLASS_NAME);
+          Serial.print(": ERROR: parseExternalData: Invalid checksum\nData:");
+          Serial.println(data);
+        }
       }
-    }
   } else {
     if (debug) {
       Serial.print(CLASS_NAME);
