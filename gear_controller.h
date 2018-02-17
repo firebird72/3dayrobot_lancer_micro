@@ -7,9 +7,8 @@ class GearController
 
     void setup();
 
-    void setTargetGear(uint8_t target_gear, uint16_t time);
-    void resetGearStates();
-    void loop(uint8_t rate);
+    void     setTargetPosition(uint16_t target_value);
+    void     loop(uint8_t rate);
 
     uint16_t getCurrentGear();
     uint8_t  getMovingStatus();
@@ -18,9 +17,10 @@ class GearController
   private:
     uint8_t   debug;
     uint8_t   moving;
-    uint16_t  target_pos;
-    uint16_t  current_pos;
+    uint16_t  target_value;
+    uint16_t  current_value;
     uint16_t  nextMillis;
+    uint16_t  tolerance;
     
     const char*   CLASS_NAME = "GearController";
     const uint8_t EXTEND_PIN = 2;
@@ -46,8 +46,8 @@ void GearController::setup() {
 // Return the value of the potentiometer
 uint16_t GearController::getCurrentPosition()
 {
-    this->current_pos = analogRead(this->FEEDBACK_PIN);
-    return current_pos;
+    this->current_value = analogRead(this->FEEDBACK_PIN);
+    return current_value;
 }
 
 // Return whether the linear actuator is actually moving at the moment
@@ -56,16 +56,17 @@ uint8_t GearController::getMovingStatus()
   return this->is_moving;
 }
 
+// Set the target position for the 
+void GearController::setCurrentPosition(uint8_t target_gear)
+{
+    this->target_value = target_value
+}
+
 void GearController::resetGearStates() {
   digitalWrite(CONTRACT_PIN, LOW);
   digitalWrite(EXTEND_PIN, LOW);
 }
 
-// Move the linear actuator to a target position in millimetres over time in milliseconds based on a prededined value for target_gear
-void GearController::setTargetGear(uint8_t target_gear, uint16_t time)
-{
-    this->target_pos = target_pos
-}
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void GearController::loop(uint8_t rate)
 {
@@ -74,14 +75,12 @@ void GearController::loop(uint8_t rate)
 
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
-    
-    // get current pos of the gear
-    float current_pos = analogRead(this->FEEDBACK_PIN);
+    getCurrentPosition();
 
-    if(abs(this->target_pos - current_pos) > TOL){
+    if(abs(this->target_value - current_value) > tolerance){
         this->is_moving = 1;
 
-        if (this->target_pos > current_pos){// move forwards
+        if (this->target_value > current_value) {
             digitalWrite(this->EXTEND_PIN, HIGH);
             digitalWrite(this->CONTRACT_PIN, LOW);
         }else{
@@ -89,7 +88,6 @@ void GearController::loop(uint8_t rate)
             digitalWrite(this->CONTRACT_PIN, HIGH);
         }
     } else if (this->is_moving){
-      //Serial.println("[Gear Controller] Stopping");
       resetGearStates();
       this->is_moving = 0;
     }
