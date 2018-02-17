@@ -26,6 +26,9 @@ void SteeringController::setup() {
   	}
 }
  
+void SteeringController::setTargetPosition(uint8_t target_position) {
+
+}
 
 void SteeringController::loop(uint8_t rate) {
 

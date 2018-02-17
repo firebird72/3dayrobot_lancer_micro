@@ -20,7 +20,7 @@ class GearController
 
     void setup();
 
-    void setTargetGear(Servo actuator, uint8_t target_gear, uint16_t time);
+    void setTargetGear(uint8_t target_gear, uint16_t time);
     void resetGearStates();
     void loop(uint8_t rate);
 
@@ -102,7 +102,7 @@ void GearController::resetGearStates() {
 }
 
 // Move the linear actuator to a target position in millimetres over time in milliseconds based on a prededined value for target_gear
-void GearController::setTargetGear(Servo actuator, uint8_t target_gear, uint16_t time)
+void GearController::setTargetGear(uint8_t target_gear, uint16_t time)
 {
     this->target_value = (float)GEAR_POSITIONS[target_gear];
     this->target_gear = target_gear;
