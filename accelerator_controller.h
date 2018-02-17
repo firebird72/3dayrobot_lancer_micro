@@ -3,8 +3,6 @@
 const uint8_t MIN_ACCELERATOR     = 1; // Position of actuator in millimetres
 const uint8_t MAX_ACCELERATOR     = 50; // Position of actuator in millimetres
 
-const uint8_t MAX_LENGTH_MM = 50;
-
 #define BACKWARDS 0
 #define FORWARDS 3000
 #define STOP 1500
@@ -22,6 +20,9 @@ class AcceleratorController
     void setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time);
     float getCurrentPosition();
     void setup();
+    void start();
+    void stop();
+    void run();
     void loop(uint8_t rate);
 
     uint8_t  getMovingStatus();
@@ -69,6 +70,18 @@ float AcceleratorController::getCurrentPosition()
 uint8_t AcceleratorController::getMovingStatus()
 {
   return this->is_moving;
+}
+
+void AcceleratorController::start() {
+  actuator.writeMicroseconds(FORWARDS);
+}
+
+void AcceleratorController::stop() {
+  actuator.writeMicroseconds(BACKWARDS);
+}
+
+void AcceleratorController::run() {
+
 }
 
 // Move the linear actuator to a target position in millimetres over time in milliseconds
