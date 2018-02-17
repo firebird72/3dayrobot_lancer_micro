@@ -1,6 +1,10 @@
 #include <Servo.h>
 
 class GearController
+#define DRIVE   457
+#define REVERSE 312
+#define NEUTRAL 367
+
 {
   public:
     GearController(uint8_t debug);

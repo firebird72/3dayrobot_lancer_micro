@@ -119,8 +119,18 @@ void logic() {
     uint16_t expected_gear_position = dataParser.getExpectedGearPosition();
     gear_position = gearController.getCurrentPosition();
 
+    Serial.println("Checking gears");
     if (expected_gear_position != gear_position) {
+    	Serial.println("no matchy");
     	gearController.setTargetPosition(expected_gear_position);
+    	Serial.println(expected_gear_position);
+    	if (expected_gear_position == 312) {
+    		Serial.println("Reverse");
+    	} else if (expected_gear_position == 457) {
+    		Serial.println("Drive");
+    	} else if (expected_gear_position === 367) {
+    		Serial.println("Neutral");
+    	}
     }
   
   	// writing back over serial comms
