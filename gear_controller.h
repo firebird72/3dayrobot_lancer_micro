@@ -86,7 +86,6 @@ uint8_t GearController::convertPercentToGear(float percent){
 // Return the last known gear
 uint16_t GearController::getCurrentGear()
 {
-
     float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
                                     / (MOTOR1_MAX - MOTOR1_MIN);
     return convertPercentToGear(current_percent);

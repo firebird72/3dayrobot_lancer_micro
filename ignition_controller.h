@@ -3,6 +3,7 @@ class IgnitionController
   public:
     IgnitionController(uint8_t debug);
 
+    void setup();
     void start();
     void stop();
     void loop(uint8_t rate);
@@ -29,16 +30,18 @@ IgnitionController::IgnitionController(uint8_t debug)
 {
   this->debug = debug;
 
-  if (debug) {
-    Serial.print(CLASS_NAME);
-    Serial.println(": initialised");
-  }
-
   pinMode(IGNITION_START_PIN, OUTPUT);
   pinMode(IGNITION_RUN_PIN, OUTPUT);
 
   digitalWrite(IGNITION_START_PIN, LOW);
   digitalWrite(IGNITION_RUN_PIN, LOW);
+}
+
+void IgnitionController::setup() {
+  if (debug) {
+    Serial.print(CLASS_NAME);
+    Serial.println(": initialised");
+  }
 }
 
 // Return whether car has started
