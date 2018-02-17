@@ -11,9 +11,13 @@ DataParser         dataParser(true);
 
 void setup() {
   Serial.begin(9600);
+  dataParser.setup();
   brakeController.setup();
+  gearController.setup();
 }
 
 void loop() {
+  dataParser.loop(100);
   brakeController.loop(100);
+  gearController.loop(100);
 }
