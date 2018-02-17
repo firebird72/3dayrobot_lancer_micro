@@ -47,7 +47,7 @@ ImuController::ImuController(uint8_t debug)
     }
 }
 
-ImuController::Setup()
+ImuController::setup()
 {
 	Wire.begin();
  	Serial.begin(115200);
@@ -77,7 +77,7 @@ ImuController::I2Cread(uint8_t Address, uint8_t Register, uint8_t Nbytes, uint8_
     Data[index++]=Wire.read();
 }
 
-ImuController::RunLoop()
+ImuController::loop()
 {
 	// Read Accelerometer and Gyro 
 	uint8_t Buf[14];

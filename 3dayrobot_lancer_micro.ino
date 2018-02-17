@@ -8,10 +8,10 @@
 #define DEBUG 1
 
 IgnitionController 		ignitionController(true);
-BrakeController    		brakeController(true);
-GearController     	  	gearController(true);
-AcceleratorController 	acceleratorController(true);
-DataParser         		dataParser(true);
+BrakeController    		brakeController(false);
+GearController     	  	gearController(false);
+AcceleratorController 	acceleratorController(false);
+DataParser         		dataParser(false);
 
 uint16_t steering_position;
 uint16_t brake_position;
@@ -67,6 +67,8 @@ void logic() {
     if (ignition_status == 0 && expected_ignition_status == 1) {
         ignitionController.start();
         if (DEBUG) Serial.println("Ignit on");
+        delay(1000);
+        //ignitionController.run();
     } else if (ignition_status == 1 && expected_ignition_status == 1) {
     	ignitionController.run();
     	if (DEBUG) Serial.println("Ignit run");

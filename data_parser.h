@@ -78,9 +78,9 @@ void DataParser::parseExternalData(String data) {
         ignition_status       = (uint8_t)  data.substring(17, 18).toInt();
         kill_status           = (uint8_t)  data.substring(18, 19).toInt();
         checksum              = (uint16_t) data.substring(MESSAGE_LENGTH - 4, MESSAGE_LENGTH).toInt();
-        Serial.println("correct sum\n");
-        Serial.println(ignition_status);
-        Serial.println("YOLO\n");
+        //Serial.println("correct sum\n");
+        //Serial.println(ignition_status);
+        //Serial.println("YOLO\n");
       } else {
         if (debug) {
           Serial.print(CLASS_NAME);
