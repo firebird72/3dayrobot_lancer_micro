@@ -53,9 +53,9 @@ void loop() {
 }
 
 void logic() {
-  Serial.print("Outisde of logic loop.\n");
+  //Serial.print("Outisde of logic loop.\n");
   if (Serial.available()) {
-  	Serial.println("Begin logic\n");
+  	//Serial.println("Begin logic\n");
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
 
