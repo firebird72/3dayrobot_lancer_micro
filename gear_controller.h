@@ -7,7 +7,7 @@ class GearController
     void setup();
 
     void     resetGearState();
-    void     setTargetPosition(uint16_t target_gear);
+    void     setTargetPosition(uint16_t target_value);
     void     loop(uint8_t rate);
 
     uint8_t  getMovingStatus();
@@ -64,7 +64,7 @@ uint8_t GearController::getMovingStatus()
 }
 
 // Set the target position for the  
-void GearController::setTargetPosition(uint8_t target_value)
+void GearController::setTargetPosition(uint16_t target_value)
 {
     this->target_value = target_value;
 }
