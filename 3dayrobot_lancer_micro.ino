@@ -2,10 +2,12 @@
 
 #include "data_parser.h"
 #include "ignition_controller.h"
+#include "gear_controller.h"
 
 #define DEBUG 1
 
 IgnitionController    ignitionController(true);
+GearController        gearController(true);
 DataParser    		    dataParser(true);
 
 uint16_t steering_position;
@@ -36,10 +38,13 @@ void setup() {
 
   dataParser.setup();
   ignitionController.setup();
+  gearController.setup();
+
+  gearController.neutral();
 
   // HACKS
   throttle.attach(2);
-  throttle.write(120)
+  throttle.write(120);
   steering.attach(7);
   steering.write(90);
 }
@@ -48,12 +53,13 @@ void loop() {
   dataParser.loop(100);
   logic();
   ignitionController.loop(100);
+  gearController.loop(10);
 }
 
 void logic() {
-  //Serial.print("Outisde of logic loop.\n");
+
   if (Serial.available()) {
-  	//Serial.println("Begin logic\n");
+
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
     // ignition commands
@@ -61,6 +67,7 @@ void logic() {
     uint8_t _expected_ignition_status = dataParser.getExpectedIgnitionStatus();
     uint16_t _expected_accelerator_position = dataParser.getExpectedAcceleratorPosition();
     uint16_t _expected_steering_position = dataParser.getExpectedSteeringPosition();
+    uint16_t _expected_gear_position = dataParser.getExpectedGearPosition();
 
     if (ignition_status != _expected_ignition_status) {
       if (_expected_ignition_status == 1) {
@@ -80,6 +87,8 @@ void logic() {
       steering.write(_expected_steering_position);
       steering_position = _expected_steering_position;
     }
+
+    //gearController.setTargetPosition(_expected_gear_position, 0);
   
   	// writing back over serial comms
   	if (millis() >= nextMillis) {
