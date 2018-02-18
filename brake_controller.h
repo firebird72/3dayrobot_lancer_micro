@@ -10,8 +10,8 @@ const uint8_t MAX_LENGTH_MM = 50;
 #define STOP 1500
 #define BREAK_TOL 1
 
-#define MOTOR1_MAX 660
-#define MOTOR1_MIN 400
+#define MOTOR1_MAX 807
+#define MOTOR1_MIN 256
 
 
 class BrakeController
@@ -78,7 +78,7 @@ void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uin
 {
   this->target_percent = 100 * (float)target_pos / MAX_LENGTH_MM;
 
-    float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN) 
+    float current_percent = 100 * (analogRead(this->potentiometer_pin) - MOTOR1_MIN)
                                     / (MOTOR1_MAX - MOTOR1_MIN);
     
     if(abs(this->target_percent - current_percent) > BREAK_TOL){
@@ -96,8 +96,6 @@ void BrakeController::setTargetPosition(Servo actuator, uint16_t target_pos, uin
       actuator.writeMicroseconds(STOP);
         this->is_moving = 0;
     }
-
-  delay(1000);
 }
 
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel

@@ -4,8 +4,8 @@
 #define STOP 1500
 #define TOL 10
 
-#define MOTOR1_MAX 660
-#define MOTOR1_MIN 400
+#define MOTOR1_MAX 807
+#define MOTOR1_MIN 256
 
 Servo actuator;  // create servo object to control a RoboClaw channel
 
@@ -22,8 +22,8 @@ void setup()
 
 void moveToPercent(float target){
 
-    float position = 100 * (analogRead(potentiometer_pin) - MOTOR1_MIN) 
-                            / (MOTOR1_MAX - MOTOR1_MIN);
+    float position = 100 * ((float)analogRead(potentiometer_pin) - MOTOR1_MIN) 
+                            / ((float)MOTOR1_MAX - MOTOR1_MIN);
 
     Serial.println("Measuring");
     Serial.println(analogRead(potentiometer_pin));
@@ -35,14 +35,11 @@ void moveToPercent(float target){
         actuator.writeMicroseconds(BACKWARDS);
     }
 
+    delay(100);
+
     while(abs(target - position) > TOL){
 
-        Serial.println("Target: ");
-        Serial.println(target);
-        Serial.println("Raw");
-        Serial.println(analogRead(potentiometer_pin));
-        Serial.println("Position: ");
-        Serial.println(position);
+
 
         
         if (target > position){// move forwards
@@ -54,8 +51,16 @@ void moveToPercent(float target){
         }
 
 
-        position = 100 * (analogRead(potentiometer_pin) - MOTOR1_MIN) 
-                                    / (MOTOR1_MAX - MOTOR1_MIN);
+        position = 100 * ((float)analogRead(potentiometer_pin) - MOTOR1_MIN) 
+                                    / (float)(MOTOR1_MAX - MOTOR1_MIN);
+
+
+        Serial.println("Target: ");
+        Serial.println(target);
+        Serial.println("Raw");
+        Serial.println(analogRead(potentiometer_pin));
+        Serial.println("position");
+        Serial.println(position);
         delay(100);
     }
     actuator.writeMicroseconds(STOP);
@@ -68,9 +73,9 @@ void loop()
    // moveToPercent(50);
     //delay(1000);
 
-    moveToPercent(90);
+    moveToPercent(10);
     delay(1000);
 
-    moveToPercent(10);
+    moveToPercent(90);
     delay(1000);
 } 
