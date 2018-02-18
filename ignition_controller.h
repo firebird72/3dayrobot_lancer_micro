@@ -5,7 +5,6 @@ class IgnitionController
 
     void setup();
     void start();
-    void run();
     void stop();
     void loop(uint8_t rate);
 
@@ -65,11 +64,12 @@ void IgnitionController::_checkStarterMotorStatus()
 void IgnitionController::start()
 {
   if (current_status != CAR_STARTED) {
-    digitalWrite(IGNITION_START_PIN, HIGH);
     digitalWrite(IGNITION_RUN_PIN, HIGH);
-    digitalWrite(13, HIGH);
-    delay(500);
+    delay(1000);
+    digitalWrite(IGNITION_START_PIN, HIGH);
+    delay(1000);
     digitalWrite(IGNITION_START_PIN, LOW);
+    this->current_status = CAR_STARTED;
   }
 }
 
@@ -78,27 +78,14 @@ void IgnitionController::stop()
   if (current_status != CAR_STOPPED) {
     digitalWrite(IGNITION_START_PIN, LOW);
     digitalWrite(IGNITION_RUN_PIN, LOW);
-    digitalWrite(13, LOW);
+    this->current_status = CAR_STOPPED;
   }
 }
 
-
-void IgnitionController::run() {
-  if (current_status )
-    digitalWrite(IGNITION_START_PIN, LOW);
-    digitalWrite(IGNITION_RUN_PIN, HIGH);
-}
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
 void IgnitionController::loop(uint8_t rate)
 {
   if (millis() >= nextMillis) {
     nextMillis = millis() + rate;
-    // Execute code
-    if (current_status == CAR_STARTED) {
-      digitalWrite(IGNITION_START_PIN, LOW);
-      digitalWrite(IGNITION_RUN_PIN, LOW);
-    }
   }
-
-
 }

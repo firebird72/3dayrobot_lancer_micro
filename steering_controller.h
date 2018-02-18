@@ -14,7 +14,6 @@ class SteeringController {
 
 		uint8_t debug:
 
-
 		const uint8_t MIN_ROTATION = 1;
 		const uint8_t MAX_ROTATION = 50;
 		const uint8_t FEEDBACK_PIN = A3;

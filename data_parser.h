@@ -13,7 +13,7 @@ class DataParser
     uint16_t getExpectedSteeringPosition();
     uint16_t getExpectedBrakePosition();
     uint16_t getExpectedAcceleratorPosition();
-    uint16_t  getExpectedGearPosition();
+    uint16_t getExpectedGearPosition();
     uint8_t  getExpectedAutonomyStatus();
     uint8_t  getExpectedIgnitionStatus();
 
@@ -60,15 +60,15 @@ void DataParser::parseExternalData(String data) {
       uint16_t _gear_position         = (uint16_t) data.substring(12, 16).toInt();
       uint16_t _checksum              = (uint16_t) data.substring(MESSAGE_LENGTH - 4, MESSAGE_LENGTH).toInt();
 
-      Serial.println("Checking checksum components.\n");
+      /*Serial.println("Checking checksum components.\n");
       Serial.println(_steering_position);
       Serial.println(_brake_position);
       Serial.println(_accelerator_position);
       Serial.println(_gear_position);
-      Serial.println(_checksum);
+      Serial.println(_checksum);*/
 
 
-      if (_steering_position + _brake_position + _accelerator_position + _gear_position == _checksum) {
+      //if (_steering_position + _brake_position + _accelerator_position + _gear_position == _checksum) {
         steering_position     = _steering_position;
         brake_position        = _brake_position;
         accelerator_position  = _accelerator_position;
@@ -78,7 +78,7 @@ void DataParser::parseExternalData(String data) {
         kill_status           = (uint8_t)  data.substring(18, 19).toInt();
         checksum              = (uint16_t) data.substring(MESSAGE_LENGTH - 4, MESSAGE_LENGTH).toInt();
 
-      } else {
+      /* } else {
         if (debug) {
           Serial.print(CLASS_NAME);
           Serial.print(": ERROR: parseExternalData: Invalid checksum\nData:");
@@ -86,8 +86,8 @@ void DataParser::parseExternalData(String data) {
           Serial.println(data.length());
           Serial.println(_steering_position + _brake_position + _accelerator_position + _gear_position);
           Serial.println(_checksum);
-        }
-      }
+         }
+      }*/
   } else {
     if (debug) {
       Serial.print(CLASS_NAME);
