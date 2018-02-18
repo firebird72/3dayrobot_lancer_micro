@@ -1,16 +1,16 @@
 #include <Servo.h>
-#include "ignition_controller.h"
-#include "brake_controller.h"
-#include "gear_controller.h"
-#include "data_parser.h"
 #include "accelerator_controller.h"
+#include "brake_controller.h"
+#include "data_parser.h"
+#include "gear_controller.h"
+#include "ignition_controller.h"
 
 #define DEBUG 1
 
 IgnitionController 		ignitionController(true);
 BrakeController    		brakeController(false);
-GearController     	  	gearController(false);
-AcceleratorController 	acceleratorController(false);
+GearController     	  gearController(false);
+AcceleratorController acceleratorController(false);
 DataParser         		dataParser(true);
 
 uint16_t steering_position;
@@ -60,8 +60,6 @@ void logic() {
   	//Serial.println("Begin logic\n");
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
-
-
     // ignition commands
 
     uint16_t expected_ignition_status = dataParser.getExpectedIgnitionStatus();
