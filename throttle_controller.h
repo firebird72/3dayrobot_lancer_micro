@@ -33,7 +33,6 @@ void ThrottleController::setTargetPosition(uint16_t target_position) {
 	Serial.println("setTargetPosition");
 	Serial.println(target_position);
 	throttle.write(target_position);
-
 }
 
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel

@@ -2,12 +2,10 @@
 
 #include "data_parser.h"
 #include "ignition_controller.h"
-#include "throttle_controller.h"
 
 #define DEBUG 1
 
 IgnitionController    ignitionController(true);
-ThrottleController    throttleController(true);
 DataParser    		    dataParser(true);
 
 uint16_t steering_position;
@@ -22,9 +20,12 @@ uint8_t  debug = 1;
 uint8_t  nextMillis = 0; 
 uint8_t  rate = 200;
 
+// HACKS
+Servo throttle;
+Servo steering;
 /* 
-	Timing mechanisms if we want to only allow commands after a certain
-	period of time
+  Timing mechanisms if we want to only allow commands after a certain
+  period of time
 */
 uint8_t ignition_interval = 500; //ms
 
@@ -35,14 +36,18 @@ void setup() {
 
   dataParser.setup();
   ignitionController.setup();
-  throttleController.setup();
+
+  // HACKS
+  throttle.attach(2);
+  throttle.write(120)
+  steering.attach(7);
+  steering.write(90);
 }
 
 void loop() {
   dataParser.loop(100);
   logic();
   ignitionController.loop(100);
-  throttleController.loop(100);
 }
 
 void logic() {
@@ -55,6 +60,7 @@ void logic() {
 
     uint8_t _expected_ignition_status = dataParser.getExpectedIgnitionStatus();
     uint16_t _expected_accelerator_position = dataParser.getExpectedAcceleratorPosition();
+    uint16_t _expected_steering_position = dataParser.getExpectedSteeringPosition();
 
     if (ignition_status != _expected_ignition_status) {
       if (_expected_ignition_status == 1) {
@@ -65,14 +71,14 @@ void logic() {
       ignition_status = _expected_ignition_status;
     }
 
-Serial.print("accelerator_position: " );
-Serial.println(accelerator_position);
-Serial.print("_expected_accelerator_position: " );
-Serial.println(_expected_accelerator_position);
-
     if (accelerator_position != _expected_accelerator_position) {
-      throttleController.setTargetPosition(_expected_accelerator_position);
+      throttle.write(_expected_accelerator_position);
       accelerator_position = _expected_accelerator_position;
+    }
+
+    if (steering_position != _expected_steering_position) {
+      steering.write(_expected_steering_position);
+      steering_position = _expected_steering_position;
     }
   
   	// writing back over serial comms
