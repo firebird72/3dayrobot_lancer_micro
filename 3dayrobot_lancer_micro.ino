@@ -54,6 +54,8 @@ void logic() {
     // ignition commands
 
     uint8_t _expected_ignition_status = dataParser.getExpectedIgnitionStatus();
+    uint16_t _expected_accelerator_position = dataParser.getExpectedAcceleratorPosition();
+
     if (ignition_status != _expected_ignition_status) {
       if (_expected_ignition_status == 1) {
         ignitionController.start();
@@ -61,6 +63,16 @@ void logic() {
         ignitionController.stop();
       }
       ignition_status = _expected_ignition_status;
+    }
+
+Serial.print("accelerator_position: " );
+Serial.println(accelerator_position);
+Serial.print("_expected_accelerator_position: " );
+Serial.println(_expected_accelerator_position);
+
+    if (accelerator_position != _expected_accelerator_position) {
+      throttleController.setTargetPosition(_expected_accelerator_position);
+      accelerator_position = _expected_accelerator_position;
     }
   
   	// writing back over serial comms
