@@ -2,11 +2,11 @@
 
 const uint8_t MIN_ACCELERATOR     = 1; // Position of actuator in millimetres
 const uint8_t MAX_ACCELERATOR     = 50; // Position of actuator in millimetres
+const uint8_t ACCELERATOR_TOL     = 10;
 
 #define BACKWARDS 0
 #define FORWARDS 3000
 #define STOP 1500
-#define ACCELERATOR_TOL 1
 
 #define MOTOR1_MAX 660
 #define MOTOR1_MIN 400
@@ -18,11 +18,12 @@ class AcceleratorController
     AcceleratorController(uint8_t debug);
 
     void setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time);
-    float getCurrentPosition();
+    uint16_t getCurrentPosition();
     void setup();
     void start();
     void stop();
     void run();
+    uint16_t clipValue(uint16_t target_value);
     void loop(uint8_t rate);
 
     uint8_t  getMovingStatus();
@@ -51,7 +52,6 @@ AcceleratorController::AcceleratorController(uint8_t debug)
   this->debug = debug;
   this->is_moving = 0;
 
-
   this->actuator.attach(actuator_pin);  // attaches the RC signal on pin 5 to the servo object 
 }
 
@@ -63,7 +63,7 @@ void AcceleratorController::setup() {
 }
 
 // Return the current position of the linear actuator in millimetres
-float AcceleratorController::getCurrentPosition()
+uint16_t AcceleratorController::getCurrentPosition()
 {
   return analogRead(this->potentiometer_pin);
 }
@@ -74,28 +74,40 @@ uint8_t AcceleratorController::getMovingStatus()
   return this->is_moving;
 }
 
+// for remote control
 void AcceleratorController::start() {
   actuator.writeMicroseconds(FORWARDS);
 }
 
 void AcceleratorController::stop() {
-  actuator.writeMicroseconds(BACKWARDS);
+  actuator.writeMicroseconds(STOP);
 }
 
 void AcceleratorController::run() {
 
 }
 
+uint16_t AcceleratorController::clipValue(uint16_t target_value) {
+  if (target_value > MOTOR1_MIN) {
+    target_value = MOTOR1_MAX;
+  } else if (target_value < MOTOR1_MIN) {
+    target_value = MOTOR1_MIN;
+  }
+
+  return target_value;
+}
+
 // Move the linear actuator to a target position in millimetres over time in milliseconds
 void AcceleratorController::setTargetPosition(Servo actuator, uint16_t target_pos, uint16_t time)
 {
-    this->target_value = (float)target_pos;
+    this->target_value = (uint16_t)target_pos;
+    this->target_value = clipValue(this->target_value);
 
     float current_value = analogRead(this->potentiometer_pin);
     
     if(abs(this->target_value - current_value) > ACCELERATOR_TOL){
         this->is_moving = 1;
-        if (this->target_value > current_value){// move forwards
+        if (this->target_value >= current_value){// move forwards
             actuator.writeMicroseconds(FORWARDS);
         } else {
             actuator.writeMicroseconds(BACKWARDS);
@@ -120,20 +132,17 @@ void AcceleratorController::loop(uint8_t rate)
     if(abs(this->target_value - current_value) > ACCELERATOR_TOL){
         this->is_moving = 1;
 
-        if (this->target_value > current_value){// move forwards
+        if (this->target_value >= current_value){// move forwards
             uint8_t value = map(FORWARDS, 0, 1023, 0, 179); 
             this->actuator.write(value);
-            //if (debug) Serial.println("[Accelerator Controller] Moving forwards");
         }else{
             uint8_t value = map(BACKWARDS, 0, 1023, 0, 179); 
             this->actuator.write(value);
-            //if (debug) Serial.println("[Accelerator Controller] backwards");
         }
     }
     else if (this->is_moving){
-      //Serial.println("[Break Controller] Stopping");
       actuator.writeMicroseconds(STOP);
-        this->is_moving = 0;
+      this->is_moving = 0;
     }
   }
 }
