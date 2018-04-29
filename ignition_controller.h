@@ -1,104 +1,89 @@
-class IgnitionController
+class IgnitionRelayController
 {
-  public:
-    IgnitionController(uint8_t debug);
+	public:
+		IgnitionRelayController(uint8_t debug, char* class_name);
 
-    void setup();
-    void start();
-    void run();
-    void stop();
-    void loop(uint8_t rate);
+		void log(String message);
+		void setPins(uint8_t acc_pin, uint8_t start_pin);
+		void setTargetState(uint16_t target_state);
+		void die();
+		void setup();
+		void loop(uint8_t rate);
 
-    uint16_t  getCurrentStatus();
+	private:
+		uint8_t   debug;
+		uint16_t  next_millis;
+		uint16_t  state_delay = 500;
 
-  private:
-    void      _checkStarterMotorStatus();
-
-    uint8_t   debug;
-    uint8_t   current_status; // CAR_STOPPED vs CAR_STARTED
-    uint16_t  nextMillis;
-
-    const uint8_t IGNITION_START_PIN  = 50; // Digital pin connected to the first relay on the ignition
-    const uint8_t IGNITION_RUN_PIN    = 52; // Digital pin connected to the first relay on the ignition
-    const uint8_t CAR_STOPPED         = 0;
-    const uint8_t CAR_STARTED         = 1;
-    const char*   CLASS_NAME          = "IgnitionController";
+		uint16_t  target_state; //0: off, 1: on
+		uint16_t  current_state;
+		uint16_t  default_state = 0;
+		
+		char*    class_name = "GenericIgnitionRelayController";
+		uint8_t  acc_pin;
+		uint8_t  start_pin;
+		uint8_t  read_pin;
 };
 
-// Initialise the IgnitionController
-// pass true for debug to get Serial replies
-IgnitionController::IgnitionController(uint8_t debug)
+IgnitionRelayController::IgnitionRelayController(uint8_t debug, char* class_name)
 {
-  this->debug = debug;
-
-  pinMode(IGNITION_START_PIN, OUTPUT);
-  pinMode(IGNITION_RUN_PIN, OUTPUT);
-
-  digitalWrite(IGNITION_START_PIN, LOW);
-  digitalWrite(IGNITION_RUN_PIN, LOW);
+	this->debug = debug;
+	this->class_name = class_name;
 }
 
-void IgnitionController::setup() {
-  if (debug) {
-    Serial.print(CLASS_NAME);
-    Serial.println(": initialised");
+void IgnitionRelayController::log(String message)
+{
+  if (this->debug) {
+    Serial.print(this->class_name);
+    Serial.print(": ");
+    Serial.println(message);
   }
 }
 
-// Return whether car has started
-uint16_t IgnitionController::getCurrentStatus()
+void IgnitionRelayController::setPins(uint8_t acc_pin, uint8_t start_pin) {
+	this->acc_pin = acc_pin;
+	this->start_pin = start_pin;
+}
+
+void IgnitionRelayController::setTargetState(uint16_t target_state)
 {
-  return current_status;
+    this->target_state = target_state;
 }
 
-void IgnitionController::_checkStarterMotorStatus()
+void IgnitionRelayController::die()
 {
-  // insert code to check that the starter moter is running and update current_status
-  if(true) { 
-    current_status = CAR_STARTED;
-  } else {
-    current_status = CAR_STOPPED;
-  }
+	setTargetState(this->default_state);
+	log("die sequence invoked, awaiting loop();");
 }
 
-// Turn relays IGNITION_START_PIN then IGNITION_RUN_PIN
-void IgnitionController::start()
+void IgnitionRelayController::setup()
 {
-  if (current_status != CAR_STARTED) {
-    digitalWrite(IGNITION_START_PIN, HIGH);
-    digitalWrite(IGNITION_RUN_PIN, HIGH);
-    digitalWrite(13, HIGH);
-    delay(500);
-    digitalWrite(IGNITION_START_PIN, LOW);
-  }
+	log("initialised");
+	this->current_state = this->default_state;
+  	setTargetState(this->default_state);
 }
 
-void IgnitionController::stop()
-{
-  if (current_status != CAR_STOPPED) {
-    digitalWrite(IGNITION_START_PIN, LOW);
-    digitalWrite(IGNITION_RUN_PIN, LOW);
-    digitalWrite(13, LOW);
-  }
-}
-
-
-void IgnitionController::run() {
-  if (current_status )
-    digitalWrite(IGNITION_START_PIN, LOW);
-    digitalWrite(IGNITION_RUN_PIN, HIGH);
-}
 // loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
-void IgnitionController::loop(uint8_t rate)
+void IgnitionRelayController::loop(uint8_t rate)
 {
-  if (millis() >= nextMillis) {
-    nextMillis = millis() + rate;
-    // Execute code
-    if (current_status == CAR_STARTED) {
-      digitalWrite(IGNITION_START_PIN, LOW);
-      digitalWrite(IGNITION_RUN_PIN, LOW);
-    }
-  }
+	if (millis() >= next_millis) {
+	  next_millis = millis() + rate;
 
-
+	  if(this->target_state > this->current_state) {
+		String message = "Changing ignition state to " + String(this->target_state) + " from " + String(this->current_state);
+        log(message);
+	  	digitalWrite(this->acc_pin, HIGH);
+	  	delay(this->state_delay);
+	  	digitalWrite(this->start_pin, HIGH);
+	  	delay(this->state_delay);
+	  	digitalWrite(this->start_pin, LOW);
+	  	this->current_state = this->target_state;
+	  } else if (this->target_state < this->current_state){
+	  	String message = "Changing ignition state to " + String(this->target_state) + " from " + String(this->current_state);
+        log(message);
+	  	digitalWrite(this->start_pin, HIGH);
+	  	digitalWrite(this->start_pin, LOW);
+	  	this->current_state = this->target_state;
+	  }
+	}
 }
