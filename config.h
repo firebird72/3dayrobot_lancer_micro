@@ -32,3 +32,7 @@ const uint8_t   ACCELERATOR_PIN = 14;
 const uint16_t  ACCELERATOR_MIN = 120;
 const uint16_t  ACCELERATOR_MAX = 220;
 const uint16_t  ACCELERATOR_DEFAULT = 120;
+
+
+// Internal workings
+const uint16_t  MAX_NO_SERIAL_CYCLES = 100;

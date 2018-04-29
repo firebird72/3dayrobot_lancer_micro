@@ -12,6 +12,7 @@ ServoController         steeringController(false, "steeringController");
 ServoController         acceleratorController(false, "acceleratorController");
 DataParser         		  dataParser(true);
 
+uint16_t no_serial_cycles = 0;
 String command;
 
 void setup() {
@@ -51,15 +52,18 @@ void setup() {
   dataParser.setup();
 }
 
+void die() {
+  brakeController.die();
+  gearController.die();
+  ignitionController.die();
+  acceleratorController.die();
+  steeringController.die();
+}
+
 void loop() {
   if (digitalRead(DEADMAN_PIN) == HIGH) {
-    brakeController.die();
-    gearController.die();
-    ignitionController.die();
-    acceleratorController.die();
-    steeringController.die();
+    die();
   } else {
-    dataParser.loop(100);
     logic();
     brakeController.loop(100);
     gearController.loop(100);
@@ -73,11 +77,19 @@ void logic() {
   if (Serial.available()) {
     command = Serial.readStringUntil('\n');
     dataParser.parseExternalData(command);
+    if (dataParser.getValidStatus() == true) {
+      ignitionController.setTargetState(dataParser.getExpectedIgnitionStatus());
+      brakeController.setTargetPosition(dataParser.getExpectedBrakePosition());
+      gearController.setTargetPosition(dataParser.getExpectedGearPosition());
+      acceleratorController.setTargetPosition(dataParser.getExpectedAcceleratorPosition());
+      steeringController.setTargetPosition(dataParser.getExpectedSteeringPosition());
 
-    ignitionController.setTargetState(dataParser.getExpectedIgnitionStatus());
-    brakeController.setTargetPosition(dataParser.getExpectedBrakePosition());
-    gearController.setTargetPosition(dataParser.getExpectedGearPosition());
-    acceleratorController.setTargetPosition(dataParser.getExpectedAcceleratorPosition());
-    steeringController.setTargetPosition(dataParser.getExpectedSteeringPosition());
+      no_serial_cycles = 0;
+    }
+  } else {
+    no_serial_cycles++;
+    if (no_serial_cycles == MAX_NO_SERIAL_CYCLES) {
+      die();
+    }
   }
 }

@@ -8,14 +8,14 @@ class DataParser
 
     void setup();
     void parseExternalData(String data);
-    void loop(uint8_t rate);
 
     uint16_t getExpectedSteeringPosition();
     uint16_t getExpectedBrakePosition();
     uint16_t getExpectedAcceleratorPosition();
-    uint16_t  getExpectedGearPosition();
+    uint16_t getExpectedGearPosition();
     uint8_t  getExpectedAutonomyStatus();
     uint8_t  getExpectedIgnitionStatus();
+    uint8_t  getValidStatus();
 
   private:
     uint8_t  getExpectedStatus();
@@ -34,6 +34,7 @@ class DataParser
     uint8_t  ignition_status;
     uint8_t  kill_status;
     uint8_t  debug;
+    uint8_t  is_valid;
 
 };
 
@@ -69,15 +70,16 @@ void DataParser::parseExternalData(String data) {
 
 
       if (_steering_position + _brake_position + _accelerator_position + _gear_position == _checksum) {
-        steering_position     = _steering_position;
-        brake_position        = _brake_position;
-        accelerator_position  = _accelerator_position;
-        gear_position         = _gear_position;
-        autonomy_status       = (uint8_t)  data.substring(16, 17).toInt();
-        ignition_status       = (uint8_t)  data.substring(17, 18).toInt();
-        kill_status           = (uint8_t)  data.substring(18, 19).toInt();
-        checksum              = (uint16_t) data.substring(MESSAGE_LENGTH - 4, MESSAGE_LENGTH).toInt();
+        this->steering_position     = _steering_position;
+        this->brake_position        = _brake_position;
+        this->accelerator_position  = _accelerator_position;
+        this->gear_position         = _gear_position;
+        this->autonomy_status       = (uint8_t)  data.substring(16, 17).toInt();
+        this->ignition_status       = (uint8_t)  data.substring(17, 18).toInt();
+        this->kill_status           = (uint8_t)  data.substring(18, 19).toInt();
+        this->checksum              = (uint16_t) data.substring(MESSAGE_LENGTH - 4, MESSAGE_LENGTH).toInt();
 
+        this->is_valid = true;
       } else {
         if (debug) {
           Serial.print(CLASS_NAME);
@@ -87,6 +89,7 @@ void DataParser::parseExternalData(String data) {
           Serial.println(_steering_position + _brake_position + _accelerator_position + _gear_position);
           Serial.println(_checksum);
         }
+        this->is_valid = false;
       }
   } else {
     if (debug) {
@@ -97,34 +100,29 @@ void DataParser::parseExternalData(String data) {
 }
 
 uint16_t DataParser::getExpectedSteeringPosition() {
-  return steering_position;
+  return this->steering_position;
 }
 
 uint16_t DataParser::getExpectedBrakePosition() {
-  return brake_position;
+  return this->brake_position;
 }
 
 uint16_t DataParser::getExpectedAcceleratorPosition() {
-  return accelerator_position;
+  return this->accelerator_position;
 }
 
 uint16_t  DataParser::getExpectedGearPosition() {
-  return gear_position;
+  return this->gear_position;
 }
 
 uint8_t  DataParser::getExpectedAutonomyStatus() {
-  return autonomy_status;
+  return this->autonomy_status;
 }
 
 uint8_t  DataParser::getExpectedIgnitionStatus() {
-  return ignition_status;
+  return this->ignition_status;
 }
 
-// loop is expected to be called from the main loop with a value passed for how frequently it must execute in the timer wheel
-void DataParser::loop(uint8_t rate)
-{
-  if (millis() >= nextMillis) {
-    nextMillis = millis() + rate;
-    // Execute code
-  }
+uint8_t  DataParser::getValidStatus() {
+  return this->is_valid;
 }
